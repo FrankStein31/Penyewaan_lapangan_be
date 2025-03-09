@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\KategoriLapController;
 use App\Http\Controllers\FasilitasController;
+use App\Http\Controllers\LapanganController;
 
 // Route untuk users
 Route::get('/users', [UserController::class, 'index']);
@@ -26,4 +27,11 @@ Route::post('/fasilitas', [FasilitasController::class, 'store']);
 Route::get('/fasilitas/{id}', [FasilitasController::class, 'show']);
 Route::put('/fasilitas/{id}', [FasilitasController::class, 'update']);
 Route::delete('/fasilitas/{id}', [FasilitasController::class, 'destroy']);
+
+// Route untuk Lapangan
+Route::get('/lapangan', [LapanganController::class, 'index']);
+Route::post('/lapangan', [LapanganController::class, 'store']);
+Route::get('/lapangan/{id}', [LapanganController::class, 'show']);
+Route::put('/lapangan/{id}', [LapanganController::class, 'update']);
+Route::delete('/lapangan/{id}', [LapanganController::class, 'destroy']);
 

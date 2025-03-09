@@ -35,6 +35,21 @@ insert  into `fasilitas`(`id`,`nama_fasilitas`,`deskripsi`,`created_at`,`updated
 (1,'Ruang Ganti','Pria dan Wanita','2025-03-09 04:40:39','2025-03-09 04:43:46'),
 (2,'toilet','pria dan wanita','2025-03-09 04:43:56','2025-03-09 04:43:56');
 
+/*Table structure for table `fasilitas_lapangan` */
+
+DROP TABLE IF EXISTS `fasilitas_lapangan`;
+
+CREATE TABLE `fasilitas_lapangan` (
+  `fasilitas_id` bigint unsigned NOT NULL,
+  `lapangan_id` bigint unsigned NOT NULL,
+  PRIMARY KEY (`fasilitas_id`,`lapangan_id`),
+  KEY `lapangan_id` (`lapangan_id`),
+  CONSTRAINT `fasilitas_lapangan_ibfk_1` FOREIGN KEY (`fasilitas_id`) REFERENCES `fasilitas` (`id`),
+  CONSTRAINT `fasilitas_lapangan_ibfk_2` FOREIGN KEY (`lapangan_id`) REFERENCES `lapangan` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+/*Data for the table `fasilitas_lapangan` */
+
 /*Table structure for table `kategori_laps` */
 
 DROP TABLE IF EXISTS `kategori_laps`;
@@ -54,6 +69,27 @@ insert  into `kategori_laps`(`id`,`nama_kategori`,`deskripsi`,`created_at`,`upda
 (2,'badminton','lapangan badminton','2025-03-09 04:29:11','2025-03-09 04:29:11'),
 (3,'Futsal','Lapangan','2025-03-09 04:29:20','2025-03-09 04:29:50');
 
+/*Table structure for table `lapangan` */
+
+DROP TABLE IF EXISTS `lapangan`;
+
+CREATE TABLE `lapangan` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `nama` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `kapasitas` int NOT NULL,
+  `deskripsi` text COLLATE utf8mb4_unicode_ci,
+  `harga` decimal(10,2) NOT NULL,
+  `kategori_id` bigint unsigned NOT NULL,
+  `status` enum('tersedia','tidak tersedia') COLLATE utf8mb4_unicode_ci DEFAULT 'tersedia',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `kategori_id` (`kategori_id`),
+  CONSTRAINT `lapangan_ibfk_1` FOREIGN KEY (`kategori_id`) REFERENCES `kategori_laps` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+/*Data for the table `lapangan` */
+
 /*Table structure for table `migrations` */
 
 DROP TABLE IF EXISTS `migrations`;
@@ -63,7 +99,7 @@ CREATE TABLE `migrations` (
   `migration` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `batch` int NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `migrations` */
 
@@ -71,7 +107,8 @@ insert  into `migrations`(`id`,`migration`,`batch`) values
 (1,'2025_03_06_140421_user',1),
 (2,'2025_03_06_141835_create_personal_access_tokens_table',2),
 (3,'2025_03_09_040954_kategori_lap',3),
-(4,'2025_03_09_043526_fasilitas',4);
+(4,'2025_03_09_043526_fasilitas',4),
+(5,'2025_03_09_111603_lapangan',5);
 
 /*Table structure for table `personal_access_tokens` */
 
