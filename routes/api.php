@@ -5,6 +5,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\KategoriLapController;
 use App\Http\Controllers\FasilitasController;
 use App\Http\Controllers\LapanganController;
+use App\Http\Controllers\PembayaranController;
 
 // Route untuk users
 Route::get('/users', [UserController::class, 'index']);
@@ -34,4 +35,11 @@ Route::post('/lapangan', [LapanganController::class, 'store']);
 Route::get('/lapangan/{id}', [LapanganController::class, 'show']);
 Route::put('/lapangan/{id}', [LapanganController::class, 'update']);
 Route::delete('/lapangan/{id}', [LapanganController::class, 'destroy']);
+
+// Route untuk Pembayaran
+Route::get('/pembayaran', [PembayaranController::class, 'index']);
+Route::post('/pembayaran', [PembayaranController::class, 'store']);
+Route::get('/pembayaran/{id}', [PembayaranController::class, 'show']);
+Route::put('/pembayaran/{id}', [PembayaranController::class, 'update']);
+Route::delete('/pembayaran/{id}', [PembayaranController::class, 'destroy']);
 
