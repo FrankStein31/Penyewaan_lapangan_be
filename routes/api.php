@@ -6,6 +6,7 @@ use App\Http\Controllers\KategoriLapController;
 use App\Http\Controllers\FasilitasController;
 use App\Http\Controllers\LapanganController;
 use App\Http\Controllers\PembayaranController;
+use App\Http\Controllers\StatusLapanganController;
 
 // Route untuk users
 Route::get('/users', [UserController::class, 'index']);
@@ -43,3 +44,9 @@ Route::get('/pembayaran/{id}', [PembayaranController::class, 'show']);
 Route::put('/pembayaran/{id}', [PembayaranController::class, 'update']);
 Route::delete('/pembayaran/{id}', [PembayaranController::class, 'destroy']);
 
+// Route untuk status Lapangan
+Route::get('/status-lapangan', [StatusLapanganController::class, 'index']);
+Route::post('/status-lapangan', [StatusLapanganController::class, 'store']);
+Route::get('/status-lapangan/{id}', [StatusLapanganController::class, 'show']);
+Route::put('/status-lapangan/{id}', [StatusLapanganController::class, 'update']);
+Route::delete('/status-lapangan/{id}', [StatusLapanganController::class, 'destroy']);

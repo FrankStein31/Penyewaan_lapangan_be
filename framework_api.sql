@@ -50,6 +50,10 @@ CREATE TABLE `fasilitas_lapangan` (
 
 /*Data for the table `fasilitas_lapangan` */
 
+insert  into `fasilitas_lapangan`(`fasilitas_id`,`lapangan_id`) values 
+(1,2),
+(2,2);
+
 /*Table structure for table `kategori_laps` */
 
 DROP TABLE IF EXISTS `kategori_laps`;
@@ -86,9 +90,12 @@ CREATE TABLE `lapangan` (
   PRIMARY KEY (`id`),
   KEY `kategori_id` (`kategori_id`),
   CONSTRAINT `lapangan_ibfk_1` FOREIGN KEY (`kategori_id`) REFERENCES `kategori_laps` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `lapangan` */
+
+insert  into `lapangan`(`id`,`nama`,`kapasitas`,`deskripsi`,`harga`,`kategori_id`,`status`,`created_at`,`updated_at`) values 
+(2,'Lapangan Futsal A',10,'Lapangan futsal indoor dengan rumput sintetis',100000.00,3,'tersedia','2025-03-09 15:50:26','2025-03-09 15:57:24');
 
 /*Table structure for table `migrations` */
 
@@ -99,7 +106,7 @@ CREATE TABLE `migrations` (
   `migration` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `batch` int NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `migrations` */
 
@@ -108,7 +115,8 @@ insert  into `migrations`(`id`,`migration`,`batch`) values
 (2,'2025_03_06_141835_create_personal_access_tokens_table',2),
 (3,'2025_03_09_040954_kategori_lap',3),
 (4,'2025_03_09_043526_fasilitas',4),
-(5,'2025_03_09_111603_lapangan',5);
+(5,'2025_03_09_111603_lapangan',5),
+(6,'2025_03_09_153737_status_lapangan',6);
 
 /*Table structure for table `personal_access_tokens` */
 
@@ -131,6 +139,26 @@ CREATE TABLE `personal_access_tokens` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `personal_access_tokens` */
+
+/*Table structure for table `status_lapangan` */
+
+DROP TABLE IF EXISTS `status_lapangan`;
+
+CREATE TABLE `status_lapangan` (
+  `id_status` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `id_lapangan` bigint unsigned NOT NULL,
+  `deskripsi_status` enum('tersedia','disewa','perbaikan') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id_status`),
+  KEY `status_lapangan_id_lapangan_foreign` (`id_lapangan`),
+  CONSTRAINT `status_lapangan_id_lapangan_foreign` FOREIGN KEY (`id_lapangan`) REFERENCES `lapangan` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+/*Data for the table `status_lapangan` */
+
+insert  into `status_lapangan`(`id_status`,`id_lapangan`,`deskripsi_status`,`created_at`,`updated_at`) values 
+(1,2,'perbaikan','2025-03-09 15:50:59','2025-03-09 15:56:33');
 
 /*Table structure for table `users` */
 
