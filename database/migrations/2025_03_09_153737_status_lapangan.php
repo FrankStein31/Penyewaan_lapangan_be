@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('status_lapangan', function (Blueprint $table) {
             $table->id('id_status');
-            $table->foreignId('id_lapangan')->constrained('lapangan', 'id')->onDelete('cascade');
+            $table->foreignId('id_lapangan')->constrained('lapangan')->onDelete('cascade');
             $table->enum('deskripsi_status', ['tersedia', 'disewa', 'perbaikan']);
             $table->timestamps();
         });
