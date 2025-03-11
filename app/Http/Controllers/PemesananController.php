@@ -98,45 +98,47 @@ class PemesananController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
-        $pemesanan = Pemesanan::find($id);
+        try {
+            $pemesanan = Pemesanan::findOrFail($id);
+            
+            $validator = Validator::make($request->all(), [
+                'id_user' => 'exists:users,id',
+                'id_lapangan' => 'exists:lapangan,id',
+                'id_hari' => 'exists:hari,id',
+                'sesi' => 'array',
+                'status' => 'in:menunggu verifikasi,diverifikasi,ditolak,dibatalkan,selesai'
+            ]);
 
-        if (!$pemesanan) {
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Validasi gagal',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
+            $updateData = $request->only(['id_user', 'id_lapangan', 'id_hari', 'status']);
+            if ($request->has('sesi')) {
+                $updateData['sesi'] = json_encode($request->sesi);
+            }
+            
+            $pemesanan->update($updateData);
+
             return response()->json([
-                'success' => false,
-                'message' => 'Pemesanan tidak ditemukan'
-            ], 404);
-        }
+                'status' => true,
+                'message' => 'Pemesanan berhasil diupdate',
+                'data' => $pemesanan->fresh()
+            ], 200);
 
-        $validator = Validator::make($request->all(), [
-            'id_user' => 'exists:users,id',
-            'id_lapangan' => 'exists:lapangan,id',
-            'id_hari' => 'exists:hari,id',
-            'sesi' => 'array',
-            'status' => 'in:menunggu verifikasi,diverifikasi,ditolak,dibatalkan,selesai'
-        ]);
-
-        if ($validator->fails()) {
+        } catch (\Exception $e) {
             return response()->json([
-                'success' => false,
-                'message' => 'Validasi error',
-                'errors' => $validator->errors()
-            ], 422);
+                'status' => false,
+                'message' => 'Gagal mengupdate pemesanan: ' . $e->getMessage(),
+                'data' => null
+            ], 500);
         }
-
-        $data = $request->all();
-        if ($request->has('sesi')) {
-            $data['sesi'] = json_encode($request->sesi);
-        }
-
-        $pemesanan->update($data);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Pemesanan berhasil diperbarui',
-            'data' => $pemesanan
-        ]);
     }
 
     /**
