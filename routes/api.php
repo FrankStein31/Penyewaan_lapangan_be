@@ -38,13 +38,6 @@ Route::get('/lapangan/{id}', [LapanganController::class, 'show']);
 Route::put('/lapangan/{id}', [LapanganController::class, 'update']);
 Route::delete('/lapangan/{id}', [LapanganController::class, 'destroy']);
 
-// Route untuk Pembayaran
-Route::get('/pembayaran', [PembayaranController::class, 'index']);
-Route::post('/pembayaran', [PembayaranController::class, 'store']);
-Route::get('/pembayaran/{id}', [PembayaranController::class, 'show']);
-Route::put('/pembayaran/{id}', [PembayaranController::class, 'update']);
-Route::delete('/pembayaran/{id}', [PembayaranController::class, 'destroy']);
-
 // Route untuk status Lapangan
 Route::get('/status-lapangan', [StatusLapanganController::class, 'index']);
 Route::post('/status-lapangan', [StatusLapanganController::class, 'store']);
@@ -58,3 +51,10 @@ Route::post('/pemesanan', [PemesananController::class, 'store']);
 Route::get('/pemesanan/{id}', [PemesananController::class, 'show']);
 Route::put('/pemesanan/{id}', [PemesananController::class, 'update']);
 Route::delete('/pemesanan/{id}', [PemesananController::class, 'destroy']);
+
+// Route untuk Pembayaran
+Route::get('/pembayaran', [PembayaranController::class, 'index']);
+Route::post('/pembayaran', [PembayaranController::class, 'store']);
+Route::get('/pembayaran/{id}', [PembayaranController::class, 'show']);
+Route::put('/pembayaran/{id}', [PembayaranController::class, 'update']);
+Route::delete('/pembayaran/{id}', [PembayaranController::class, 'destroy']);

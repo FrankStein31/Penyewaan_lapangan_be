@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('pembayaran', function (Blueprint $table) {
             $table->id('id_pembayaran');
-            $table->foreignId('id_pemesanan')->constrained('pemesanan');
+            $table->foreignId('id_pemesanan')->references('id_pemesanan')->on('pemesanan');
             $table->enum('metode', ['transfer', 'midtrans']);
             $table->string('bukti_transfer')->nullable();
             $table->enum('status', ['menunggu verifikasi', 'belum dibayar', 'ditolak', 'diverifikasi']);
