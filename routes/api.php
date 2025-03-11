@@ -8,6 +8,7 @@ use App\Http\Controllers\LapanganController;
 use App\Http\Controllers\PembayaranController;
 use App\Http\Controllers\PemesananController;
 use App\Http\Controllers\StatusLapanganController;
+use App\Http\Controllers\SesiController;
 
 // Route untuk users
 Route::get('/users', [UserController::class, 'index']);
@@ -58,3 +59,10 @@ Route::post('/pembayaran', [PembayaranController::class, 'store']);
 Route::get('/pembayaran/{id}', [PembayaranController::class, 'show']);
 Route::put('/pembayaran/{id}', [PembayaranController::class, 'update']);
 Route::delete('/pembayaran/{id}', [PembayaranController::class, 'destroy']);
+
+//Route Sesi
+Route::get('/sesi', [SesiController::class, 'index']);
+Route::post('/sesi', [SesiController::class, 'store']);
+Route::get('/sesi/{id}', [SesiController::class, 'show']); 
+Route::put('/sesi/{id}', [SesiController::class, 'update']);
+Route::delete('/sesi/{id}', [SesiController::class, 'destroy']);

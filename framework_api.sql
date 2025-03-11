@@ -1,5 +1,5 @@
 /*
-SQLyog Enterprise v13.1.1 (64 bit)
+SQLyog Ultimate v13.1.1 (64 bit)
 MySQL - 8.0.30 : Database - framework_api
 *********************************************************************
 */
@@ -22,8 +22,8 @@ DROP TABLE IF EXISTS `fasilitas`;
 
 CREATE TABLE `fasilitas` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `nama_fasilitas` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `deskripsi` text COLLATE utf8mb4_unicode_ci,
+  `nama_fasilitas` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `deskripsi` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
@@ -60,7 +60,7 @@ DROP TABLE IF EXISTS `hari`;
 
 CREATE TABLE `hari` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `nama_hari` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nama_hari` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -78,8 +78,8 @@ DROP TABLE IF EXISTS `kategori_laps`;
 
 CREATE TABLE `kategori_laps` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `nama_kategori` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `deskripsi` text COLLATE utf8mb4_unicode_ci,
+  `nama_kategori` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `deskripsi` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
@@ -97,12 +97,12 @@ DROP TABLE IF EXISTS `lapangan`;
 
 CREATE TABLE `lapangan` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `nama` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nama` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `kapasitas` int NOT NULL,
-  `deskripsi` text COLLATE utf8mb4_unicode_ci,
+  `deskripsi` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `harga` decimal(10,2) NOT NULL,
   `kategori_id` bigint unsigned NOT NULL,
-  `status` enum('tersedia','tidak tersedia') COLLATE utf8mb4_unicode_ci DEFAULT 'tersedia',
+  `status` enum('tersedia','tidak tersedia') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT 'tersedia',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -121,10 +121,10 @@ DROP TABLE IF EXISTS `migrations`;
 
 CREATE TABLE `migrations` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `migration` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `migration` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `batch` int NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `migrations` */
 
@@ -137,7 +137,8 @@ insert  into `migrations`(`id`,`migration`,`batch`) values
 (6,'2025_03_09_153737_status_lapangan',6),
 (7,'2025_03_09_210649_create_hari_table',7),
 (8,'2025_03_09_210650_create_pemesanan_table',8),
-(9,'2025_03_09_210651_create_pembayaran_table',9);
+(9,'2025_03_09_210651_create_pembayaran_table',9),
+(10,'2025_03_11_090033_sesi',10);
 
 /*Table structure for table `pembayaran` */
 
@@ -146,9 +147,9 @@ DROP TABLE IF EXISTS `pembayaran`;
 CREATE TABLE `pembayaran` (
   `id_pembayaran` bigint unsigned NOT NULL AUTO_INCREMENT,
   `id_pemesanan` bigint unsigned NOT NULL,
-  `metode` enum('transfer','midtrans') COLLATE utf8mb4_unicode_ci NOT NULL,
-  `bukti_transfer` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `status` enum('menunggu verifikasi','belum dibayar','ditolak','diverifikasi') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `metode` enum('transfer','midtrans') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `bukti_transfer` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `status` enum('menunggu verifikasi','belum dibayar','ditolak','diverifikasi') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id_pembayaran`),
@@ -171,7 +172,7 @@ CREATE TABLE `pemesanan` (
   `id_lapangan` bigint unsigned NOT NULL,
   `id_hari` bigint unsigned NOT NULL,
   `sesi` json NOT NULL,
-  `status` enum('menunggu verifikasi','diverifikasi','ditolak','dibatalkan','selesai') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'menunggu verifikasi',
+  `status` enum('menunggu verifikasi','diverifikasi','ditolak','dibatalkan','selesai') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'menunggu verifikasi',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id_pemesanan`),
@@ -194,11 +195,11 @@ DROP TABLE IF EXISTS `personal_access_tokens`;
 
 CREATE TABLE `personal_access_tokens` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `tokenable_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `tokenable_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `tokenable_id` bigint unsigned NOT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `token` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `abilities` text COLLATE utf8mb4_unicode_ci,
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `token` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `abilities` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `last_used_at` timestamp NULL DEFAULT NULL,
   `expires_at` timestamp NULL DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -210,6 +211,26 @@ CREATE TABLE `personal_access_tokens` (
 
 /*Data for the table `personal_access_tokens` */
 
+/*Table structure for table `sesis` */
+
+DROP TABLE IF EXISTS `sesis`;
+
+CREATE TABLE `sesis` (
+  `id_jam` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `jam_mulai` time NOT NULL,
+  `jam_selesai` time NOT NULL,
+  `deskripsi` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id_jam`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+/*Data for the table `sesis` */
+
+insert  into `sesis`(`id_jam`,`jam_mulai`,`jam_selesai`,`deskripsi`,`created_at`,`updated_at`) values 
+(1,'07:00:00','08:00:00','sesi 1','2025-03-11 09:19:59','2025-03-11 09:27:26'),
+(2,'09:00:00','10:00:00','sesi 3','2025-03-11 09:20:45','2025-03-11 09:20:45');
+
 /*Table structure for table `status_lapangan` */
 
 DROP TABLE IF EXISTS `status_lapangan`;
@@ -217,7 +238,7 @@ DROP TABLE IF EXISTS `status_lapangan`;
 CREATE TABLE `status_lapangan` (
   `id_status` bigint unsigned NOT NULL AUTO_INCREMENT,
   `id_lapangan` bigint unsigned NOT NULL,
-  `deskripsi_status` enum('tersedia','disewa','perbaikan') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `deskripsi_status` enum('tersedia','disewa','perbaikan') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id_status`),
@@ -236,8 +257,8 @@ DROP TABLE IF EXISTS `users`;
 
 CREATE TABLE `users` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `nama` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `nim` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nama` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nim` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
