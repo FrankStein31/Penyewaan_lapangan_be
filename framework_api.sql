@@ -54,6 +54,24 @@ insert  into `fasilitas_lapangan`(`fasilitas_id`,`lapangan_id`) values
 (1,2),
 (2,2);
 
+/*Table structure for table `hari` */
+
+DROP TABLE IF EXISTS `hari`;
+
+CREATE TABLE `hari` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `nama_hari` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `hari_nama_hari_unique` (`nama_hari`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+/*Data for the table `hari` */
+
+insert  into `hari`(`id`,`nama_hari`,`created_at`,`updated_at`) values 
+(1,'senin','2025-03-11 09:43:41','2025-03-11 09:43:44');
+
 /*Table structure for table `kategori_laps` */
 
 DROP TABLE IF EXISTS `kategori_laps`;
@@ -106,7 +124,7 @@ CREATE TABLE `migrations` (
   `migration` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `batch` int NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `migrations` */
 
@@ -116,7 +134,59 @@ insert  into `migrations`(`id`,`migration`,`batch`) values
 (3,'2025_03_09_040954_kategori_lap',3),
 (4,'2025_03_09_043526_fasilitas',4),
 (5,'2025_03_09_111603_lapangan',5),
-(6,'2025_03_09_153737_status_lapangan',6);
+(6,'2025_03_09_153737_status_lapangan',6),
+(7,'2025_03_09_210649_create_hari_table',7),
+(8,'2025_03_09_210650_create_pemesanan_table',8),
+(9,'2025_03_09_210651_create_pembayaran_table',9);
+
+/*Table structure for table `pembayaran` */
+
+DROP TABLE IF EXISTS `pembayaran`;
+
+CREATE TABLE `pembayaran` (
+  `id_pembayaran` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `id_pemesanan` bigint unsigned NOT NULL,
+  `metode` enum('transfer','midtrans') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `bukti_transfer` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `status` enum('menunggu verifikasi','belum dibayar','ditolak','diverifikasi') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id_pembayaran`),
+  KEY `pembayaran_id_pemesanan_foreign` (`id_pemesanan`),
+  CONSTRAINT `pembayaran_id_pemesanan_foreign` FOREIGN KEY (`id_pemesanan`) REFERENCES `pemesanan` (`id_pemesanan`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+/*Data for the table `pembayaran` */
+
+insert  into `pembayaran`(`id_pembayaran`,`id_pemesanan`,`metode`,`bukti_transfer`,`status`,`created_at`,`updated_at`) values 
+(1,2,'transfer','bukti_transfer/1741662722_07_Frankie Steinlie.png','diverifikasi','2025-03-11 03:07:39','2025-03-11 03:12:02');
+
+/*Table structure for table `pemesanan` */
+
+DROP TABLE IF EXISTS `pemesanan`;
+
+CREATE TABLE `pemesanan` (
+  `id_pemesanan` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `id_user` bigint unsigned NOT NULL,
+  `id_lapangan` bigint unsigned NOT NULL,
+  `id_hari` bigint unsigned NOT NULL,
+  `sesi` json NOT NULL,
+  `status` enum('menunggu verifikasi','diverifikasi','ditolak','dibatalkan','selesai') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'menunggu verifikasi',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id_pemesanan`),
+  KEY `pemesanan_id_user_foreign` (`id_user`),
+  KEY `pemesanan_id_lapangan_foreign` (`id_lapangan`),
+  KEY `pemesanan_id_hari_foreign` (`id_hari`),
+  CONSTRAINT `pemesanan_id_hari_foreign` FOREIGN KEY (`id_hari`) REFERENCES `hari` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `pemesanan_id_lapangan_foreign` FOREIGN KEY (`id_lapangan`) REFERENCES `lapangan` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `pemesanan_id_user_foreign` FOREIGN KEY (`id_user`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+/*Data for the table `pemesanan` */
+
+insert  into `pemesanan`(`id_pemesanan`,`id_user`,`id_lapangan`,`id_hari`,`sesi`,`status`,`created_at`,`updated_at`) values 
+(2,4,2,1,'\"[3,4]\"','diverifikasi','2025-03-11 02:44:43','2025-03-11 02:57:35');
 
 /*Table structure for table `personal_access_tokens` */
 
