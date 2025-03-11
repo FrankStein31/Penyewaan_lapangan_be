@@ -52,7 +52,6 @@ Route::get('/status-lapangan/{id}', [StatusLapanganController::class, 'show']);
 Route::put('/status-lapangan/{id}', [StatusLapanganController::class, 'update']);
 Route::delete('/status-lapangan/{id}', [StatusLapanganController::class, 'destroy']);
 
-
 // Route untuk status Lapangan
 Route::get('/pemesanan', [PemesananController::class, 'index']);
 Route::post('/pemesanan', [PemesananController::class, 'store']);
