@@ -33,7 +33,10 @@ class UserController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'nama' => 'required|string|max:255',
-            'nim' => 'required|string|max:255|unique:users'
+            'email' => 'required|email|unique:users',
+            'password' => 'required|string|min:6',
+            'role' => 'required|in:admin,user',
+            'no_hp' => 'required|string|max:255|unique:users'
         ]);
 
         if ($validator->fails()) {
@@ -46,7 +49,10 @@ class UserController extends Controller
 
         $user = User::create([
             'nama' => $request->nama,
-            'nim' => $request->nim
+            'email' => $request->email,
+            'password' => bcrypt($request->password),
+            'role' => $request->role,
+            'no_hp' => $request->no_hp
         ]);
 
         return response()->json([
@@ -81,12 +87,12 @@ class UserController extends Controller
 
     /**
      *
-     * @param string $nim
+     * @param string $no_hp
      * @return JsonResponse
      */
-    public function getByNim($nim): JsonResponse
+    public function getByHp($no_hp): JsonResponse
     {
-        $user = User::where('nim', $nim)->first();
+        $user = User::where('no_hp', $no_hp)->first();
 
         if (!$user) {
             return response()->json([
@@ -121,7 +127,10 @@ class UserController extends Controller
 
         $validator = Validator::make($request->all(), [
             'nama' => 'string|max:255',
-            'nim' => 'string|max:255|unique:users,nim,' . $id
+            'email' => 'email|unique:users,email,' . $id,
+            'password' => 'nullable|string|min:6',
+            'role' => 'in:admin,user',
+            'no_hp' => 'string|max:255|unique:users,no_hp,' . $id
         ]);
 
         if ($validator->fails()) {
@@ -132,7 +141,12 @@ class UserController extends Controller
             ], 422);
         }
 
-        $user->update($request->all());
+        $data = $request->all();
+        if (isset($data['password'])) {
+            $data['password'] = bcrypt($data['password']);
+        }
+
+        $user->update($data);
 
         return response()->json([
             'success' => true,

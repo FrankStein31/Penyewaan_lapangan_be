@@ -162,9 +162,6 @@ CREATE TABLE `pembayaran` (
 
 /*Data for the table `pembayaran` */
 
-insert  into `pembayaran`(`id_pembayaran`,`id_pemesanan`,`metode`,`bukti_transfer`,`status`,`created_at`,`updated_at`) values 
-(1,2,'transfer','bukti_transfer/1741662722_07_Frankie Steinlie.png','diverifikasi','2025-03-11 03:07:39','2025-03-11 03:12:02');
-
 /*Table structure for table `pemesanan` */
 
 DROP TABLE IF EXISTS `pemesanan`;
@@ -189,9 +186,6 @@ CREATE TABLE `pemesanan` (
 
 /*Data for the table `pemesanan` */
 
-insert  into `pemesanan`(`id_pemesanan`,`id_user`,`id_lapangan`,`id_hari`,`sesi`,`status`,`created_at`,`updated_at`) values 
-(2,4,2,1,'\"[3,4]\"','diverifikasi','2025-03-11 02:44:43','2025-03-11 02:57:35');
-
 /*Table structure for table `personal_access_tokens` */
 
 DROP TABLE IF EXISTS `personal_access_tokens`;
@@ -210,9 +204,12 @@ CREATE TABLE `personal_access_tokens` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `personal_access_tokens_token_unique` (`token`),
   KEY `personal_access_tokens_tokenable_type_tokenable_id_index` (`tokenable_type`,`tokenable_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `personal_access_tokens` */
+
+insert  into `personal_access_tokens`(`id`,`tokenable_type`,`tokenable_id`,`name`,`token`,`abilities`,`last_used_at`,`expires_at`,`created_at`,`updated_at`) values 
+(3,'App\\Models\\User',6,'auth_token','daf19d9406ed3997aa3deb1de2d507e3c585a1bd73b777ae79fb8eded4dfc1ab','[\"*\"]','2025-03-19 13:17:44',NULL,'2025-03-19 13:16:42','2025-03-19 13:17:44');
 
 /*Table structure for table `sesis` */
 
@@ -261,18 +258,22 @@ DROP TABLE IF EXISTS `users`;
 CREATE TABLE `users` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `nama` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `nim` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `password` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `role` enum('admin','user') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'user',
+  `no_hp` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `users_nim_unique` (`nim`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  UNIQUE KEY `users_nim_unique` (`no_hp`),
+  UNIQUE KEY `users_email_unique` (`email`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `users` */
 
-insert  into `users`(`id`,`nama`,`nim`,`created_at`,`updated_at`) values 
-(3,'frankie','244107027008','2025-03-06 14:31:41','2025-03-06 14:31:41'),
-(4,'Steinlie','123','2025-03-09 04:00:35','2025-03-09 04:00:35');
+insert  into `users`(`id`,`nama`,`email`,`password`,`role`,`no_hp`,`created_at`,`updated_at`) values 
+(5,'Nama Baru','steinlie@gmail.com','$2y$12$AF6icwUm0CA3urB9DnvpieSFqaDd1LQQQVkqpGUhkTgRlhxXIbbgW','admin','213730071','2025-03-19 08:07:05','2025-03-19 12:48:56'),
+(6,'frank','frank@gmail.com','$2y$12$ZBf9O1TMcMCq3RsUt2Y8ieAjHII5NQgcH.E2w78CBNHepMkjhznUq','user','12345','2025-03-19 13:11:35','2025-03-19 13:11:35');
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
