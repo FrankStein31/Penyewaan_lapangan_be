@@ -204,12 +204,12 @@ CREATE TABLE `personal_access_tokens` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `personal_access_tokens_token_unique` (`token`),
   KEY `personal_access_tokens_tokenable_type_tokenable_id_index` (`tokenable_type`,`tokenable_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `personal_access_tokens` */
 
 insert  into `personal_access_tokens`(`id`,`tokenable_type`,`tokenable_id`,`name`,`token`,`abilities`,`last_used_at`,`expires_at`,`created_at`,`updated_at`) values 
-(3,'App\\Models\\User',6,'auth_token','daf19d9406ed3997aa3deb1de2d507e3c585a1bd73b777ae79fb8eded4dfc1ab','[\"*\"]','2025-03-19 13:17:44',NULL,'2025-03-19 13:16:42','2025-03-19 13:17:44');
+(13,'App\\Models\\User',5,'auth_token','0761fb674a64da94a53fb75f40546be733f97e25ba7fd8f58796d51a8d137172','[\"*\"]','2025-03-19 15:11:40',NULL,'2025-03-19 15:11:16','2025-03-19 15:11:40');
 
 /*Table structure for table `sesis` */
 
@@ -273,7 +273,7 @@ CREATE TABLE `users` (
 
 insert  into `users`(`id`,`nama`,`email`,`password`,`role`,`no_hp`,`created_at`,`updated_at`) values 
 (5,'Nama Baru','steinlie@gmail.com','$2y$12$AF6icwUm0CA3urB9DnvpieSFqaDd1LQQQVkqpGUhkTgRlhxXIbbgW','admin','213730071','2025-03-19 08:07:05','2025-03-19 12:48:56'),
-(6,'frank','frank@gmail.com','$2y$12$ZBf9O1TMcMCq3RsUt2Y8ieAjHII5NQgcH.E2w78CBNHepMkjhznUq','user','12345','2025-03-19 13:11:35','2025-03-19 13:11:35');
+(6,'frank edit','frank@gmail.com','$2y$12$NPExvtMaCkPH1eS5uD4zaOnUIEmU30YieIbSro7lo29XkvYb2b7Ky','user','444444','2025-03-19 13:11:35','2025-03-19 15:10:38');
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
