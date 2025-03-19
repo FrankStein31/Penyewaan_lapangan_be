@@ -65,12 +65,15 @@ CREATE TABLE `hari` (
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `hari_nama_hari_unique` (`nama_hari`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `hari` */
 
 insert  into `hari`(`id`,`nama_hari`,`created_at`,`updated_at`) values 
-(1,'senin','2025-03-11 09:43:41','2025-03-11 09:43:44');
+(1,'senin','2025-03-11 09:43:41','2025-03-11 09:43:44'),
+(2,'selasa','2025-03-19 06:52:15','2025-03-19 06:52:15'),
+(3,'rabu','2025-03-19 06:52:23','2025-03-19 06:52:23'),
+(4,'kamis','2025-03-19 06:53:42','2025-03-19 06:54:10');
 
 /*Table structure for table `kategori_laps` */
 
