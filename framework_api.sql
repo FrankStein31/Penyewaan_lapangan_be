@@ -1,5 +1,5 @@
 /*
-SQLyog Ultimate v13.1.1 (64 bit)
+SQLyog Enterprise v13.1.1 (64 bit)
 MySQL - 8.0.30 : Database - framework_api
 *********************************************************************
 */
@@ -219,7 +219,7 @@ CREATE TABLE `sesis` (
   `id_jam` bigint unsigned NOT NULL AUTO_INCREMENT,
   `jam_mulai` time NOT NULL,
   `jam_selesai` time NOT NULL,
-  `deskripsi` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `deskripsi` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id_jam`)
