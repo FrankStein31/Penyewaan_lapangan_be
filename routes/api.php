@@ -9,6 +9,7 @@ use App\Http\Controllers\PembayaranController;
 use App\Http\Controllers\PemesananController;
 use App\Http\Controllers\StatusLapanganController;
 use App\Http\Controllers\SesiController;
+use App\Http\Controllers\HariController;
 
 // Route untuk users
 Route::get('/users', [UserController::class, 'index']);
@@ -66,3 +67,10 @@ Route::post('/sesi', [SesiController::class, 'store']);
 Route::get('/sesi/{id}', [SesiController::class, 'show']); 
 Route::put('/sesi/{id}', [SesiController::class, 'update']);
 Route::delete('/sesi/{id}', [SesiController::class, 'destroy']);
+
+// Route untuk Hari
+Route::get('/hari', [HariController::class, 'index']);
+Route::post('/hari', [HariController::class, 'store']);
+Route::get('/hari/{id}', [HariController::class, 'show']);
+Route::put('/hari/{id}', [HariController::class, 'update']);
+Route::delete('/hari/{id}', [HariController::class, 'destroy']);
