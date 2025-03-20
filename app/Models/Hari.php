@@ -16,8 +16,8 @@ class Hari extends Model
     ];
 
     // Relasi dengan Pemesanan
-    public function pemesanan()
-    {
-        return $this->hasMany(Pemesanan::class, 'id_hari');
-    }
+    // public function pemesanan()
+    // {
+    //     return $this->hasMany(Pemesanan::class, 'id_hari');
+    // }
 }
