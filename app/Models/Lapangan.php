@@ -21,6 +21,16 @@ class Lapangan extends Model
         return $this->belongsTo(KategoriLap::class, 'kategori_id');
     }
 
+    public function status_lapangan()
+    {
+        return $this->hasMany(StatusLapangan::class, 'id_lapangan');
+    }
+
+    public function pemesanan()
+    {
+        return $this->hasMany(Pemesanan::class, 'id_lapangan');
+    }
+
     public function fasilitas()
     {
         return $this->belongsToMany(Fasilitas::class, 'fasilitas_lapangan');

@@ -170,7 +170,7 @@ CREATE TABLE `pemesanan` (
   `id_pemesanan` bigint unsigned NOT NULL AUTO_INCREMENT,
   `id_user` bigint unsigned NOT NULL,
   `id_lapangan` bigint unsigned NOT NULL,
-  `id_hari` bigint unsigned NOT NULL,
+  `tanggal` date DEFAULT NULL,
   `sesi` json NOT NULL,
   `status` enum('menunggu verifikasi','diverifikasi','ditolak','dibatalkan','selesai') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'menunggu verifikasi',
   `created_at` timestamp NULL DEFAULT NULL,
@@ -178,13 +178,17 @@ CREATE TABLE `pemesanan` (
   PRIMARY KEY (`id_pemesanan`),
   KEY `pemesanan_id_user_foreign` (`id_user`),
   KEY `pemesanan_id_lapangan_foreign` (`id_lapangan`),
-  KEY `pemesanan_id_hari_foreign` (`id_hari`),
-  CONSTRAINT `pemesanan_id_hari_foreign` FOREIGN KEY (`id_hari`) REFERENCES `hari` (`id`) ON DELETE CASCADE,
   CONSTRAINT `pemesanan_id_lapangan_foreign` FOREIGN KEY (`id_lapangan`) REFERENCES `lapangan` (`id`) ON DELETE CASCADE,
   CONSTRAINT `pemesanan_id_user_foreign` FOREIGN KEY (`id_user`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `pemesanan` */
+
+insert  into `pemesanan`(`id_pemesanan`,`id_user`,`id_lapangan`,`tanggal`,`sesi`,`status`,`created_at`,`updated_at`) values 
+(3,6,2,'2025-03-20','[1, 2]','diverifikasi','2025-03-20 04:39:08','2025-03-20 12:28:55'),
+(4,7,2,'2025-03-20','[4]','menunggu verifikasi','2025-03-20 04:44:25','2025-03-20 04:44:25'),
+(5,7,2,'2025-03-21','[1, 2]','menunggu verifikasi','2025-03-20 04:44:58','2025-03-20 04:44:58'),
+(6,6,2,'2025-03-21','[4]','menunggu verifikasi','2025-03-20 12:24:53','2025-03-20 12:24:53');
 
 /*Table structure for table `personal_access_tokens` */
 
@@ -204,12 +208,16 @@ CREATE TABLE `personal_access_tokens` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `personal_access_tokens_token_unique` (`token`),
   KEY `personal_access_tokens_tokenable_type_tokenable_id_index` (`tokenable_type`,`tokenable_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `personal_access_tokens` */
 
 insert  into `personal_access_tokens`(`id`,`tokenable_type`,`tokenable_id`,`name`,`token`,`abilities`,`last_used_at`,`expires_at`,`created_at`,`updated_at`) values 
-(13,'App\\Models\\User',5,'auth_token','0761fb674a64da94a53fb75f40546be733f97e25ba7fd8f58796d51a8d137172','[\"*\"]','2025-03-19 15:11:40',NULL,'2025-03-19 15:11:16','2025-03-19 15:11:40');
+(15,'App\\Models\\User',6,'auth_token','85a0279d2ed65bb2ee9eeb946dbc246a8a6e0a780a4529995711b012fd539c69','[\"*\"]','2025-03-20 04:36:24',NULL,'2025-03-20 03:09:50','2025-03-20 04:36:24'),
+(16,'App\\Models\\User',5,'auth_token','36a6d4e1dfb0b1693fcac3dad268fcc8f85bfdb573687d1e80542ba4d862aeb1','[\"*\"]',NULL,NULL,'2025-03-20 04:35:42','2025-03-20 04:35:42'),
+(17,'App\\Models\\User',6,'auth_token','dba4cbf99e43625dc405eb47d4a557634d76e9645926792aca62769fefb03142','[\"*\"]','2025-03-20 12:24:53',NULL,'2025-03-20 04:35:51','2025-03-20 12:24:53'),
+(18,'App\\Models\\User',7,'auth_token','a8416bf37911e189e1e6fde6a7e330bec1bf8da4e9742aacbb203282135178ca','[\"*\"]','2025-03-20 12:25:20',NULL,'2025-03-20 04:40:32','2025-03-20 12:25:20'),
+(19,'App\\Models\\User',5,'auth_token','21f90a6c6d6ad177b0ccd5b27f6de93fede182af31a1c5105065b79aaa5e7f1f','[\"*\"]','2025-03-20 12:28:55',NULL,'2025-03-20 12:27:35','2025-03-20 12:28:55');
 
 /*Table structure for table `sesis` */
 
@@ -223,13 +231,15 @@ CREATE TABLE `sesis` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id_jam`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `sesis` */
 
 insert  into `sesis`(`id_jam`,`jam_mulai`,`jam_selesai`,`deskripsi`,`created_at`,`updated_at`) values 
 (1,'07:00:00','08:00:00','sesi 1','2025-03-11 09:19:59','2025-03-11 09:27:26'),
-(2,'09:00:00','10:00:00','sesi 3','2025-03-11 09:20:45','2025-03-11 09:20:45');
+(2,'08:00:00','09:00:00','sesi 2','2025-03-11 09:20:45','2025-03-11 09:20:45'),
+(4,'09:00:00','10:00:00','sesi 3','2025-03-20 11:42:36','2025-03-20 11:42:39'),
+(5,'10:00:00','11:00:00','sesi 4','2025-03-20 11:43:00','2025-03-20 11:43:03');
 
 /*Table structure for table `status_lapangan` */
 
@@ -249,7 +259,7 @@ CREATE TABLE `status_lapangan` (
 /*Data for the table `status_lapangan` */
 
 insert  into `status_lapangan`(`id_status`,`id_lapangan`,`deskripsi_status`,`created_at`,`updated_at`) values 
-(1,2,'perbaikan','2025-03-09 15:50:59','2025-03-09 15:56:33');
+(1,2,'disewa','2025-03-09 15:50:59','2025-03-20 04:39:08');
 
 /*Table structure for table `users` */
 
@@ -267,13 +277,14 @@ CREATE TABLE `users` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `users_nim_unique` (`no_hp`),
   UNIQUE KEY `users_email_unique` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `users` */
 
 insert  into `users`(`id`,`nama`,`email`,`password`,`role`,`no_hp`,`created_at`,`updated_at`) values 
 (5,'Nama Baru','steinlie@gmail.com','$2y$12$AF6icwUm0CA3urB9DnvpieSFqaDd1LQQQVkqpGUhkTgRlhxXIbbgW','admin','213730071','2025-03-19 08:07:05','2025-03-19 12:48:56'),
-(6,'frank edit','frank@gmail.com','$2y$12$NPExvtMaCkPH1eS5uD4zaOnUIEmU30YieIbSro7lo29XkvYb2b7Ky','user','444444','2025-03-19 13:11:35','2025-03-19 15:10:38');
+(6,'frank edit','frank@gmail.com','$2y$12$NPExvtMaCkPH1eS5uD4zaOnUIEmU30YieIbSro7lo29XkvYb2b7Ky','user','444444','2025-03-19 13:11:35','2025-03-19 15:10:38'),
+(7,'stein','stein@gmail.com','$2y$12$xcefpNdl9tS0uccVulgAhudNatEF1eXBASntI9RE3NtZopDD3pqcS','user','12345','2025-03-20 04:40:32','2025-03-20 04:40:32');
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;

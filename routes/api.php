@@ -24,8 +24,21 @@ Route::middleware('auth:sanctum')->group(function () {
     // Route yang bisa diakses user dan admin
     Route::get('/lapangan', [LapanganController::class, 'index']);
     Route::get('/lapangan/{id}', [LapanganController::class, 'show']);
+
+    //status lapangan
+    Route::get('/status-lapangan', [StatusLapanganController::class, 'index']);
+    Route::get('/status-lapangan/{id}', [StatusLapanganController::class, 'show']);
     
+    //hari
+    Route::get('/hari', [HariController::class, 'index']);
+    Route::get('/hari/{id}', [HariController::class, 'show']);
+    
+    // sesi
+    Route::get('/sesi', [SesiController::class, 'index']);
+    Route::get('/sesi/{id}', [SesiController::class, 'show']); 
+
     // Pemesanan
+    Route::get('/pemesanan/check-availability', [PemesananController::class, 'checkAvailability']);
     Route::get('/pemesanan', [PemesananController::class, 'index']);
     Route::post('/pemesanan', [PemesananController::class, 'store']);
     Route::get('/pemesanan/{id}', [PemesananController::class, 'show']);
@@ -71,23 +84,17 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/lapangan/{id}', [LapanganController::class, 'destroy']);
 
         // Status Lapangan
-        Route::get('/status-lapangan', [StatusLapanganController::class, 'index']);
         Route::post('/status-lapangan', [StatusLapanganController::class, 'store']);
-        Route::get('/status-lapangan/{id}', [StatusLapanganController::class, 'show']);
         Route::put('/status-lapangan/{id}', [StatusLapanganController::class, 'update']);
         Route::delete('/status-lapangan/{id}', [StatusLapanganController::class, 'destroy']);
 
         // Sesi
-        Route::get('/sesi', [SesiController::class, 'index']);
         Route::post('/sesi', [SesiController::class, 'store']);
-        Route::get('/sesi/{id}', [SesiController::class, 'show']); 
         Route::put('/sesi/{id}', [SesiController::class, 'update']);
         Route::delete('/sesi/{id}', [SesiController::class, 'destroy']);
 
         // Hari
-        Route::get('/hari', [HariController::class, 'index']);
         Route::post('/hari', [HariController::class, 'store']);
-        Route::get('/hari/{id}', [HariController::class, 'show']);
         Route::put('/hari/{id}', [HariController::class, 'update']);
         Route::delete('/hari/{id}', [HariController::class, 'destroy']);
     });

@@ -15,13 +15,14 @@ class Pemesanan extends Model
     protected $fillable = [
         'id_user',
         'id_lapangan',
-        'id_hari',
+        'tanggal',
         'sesi',
         'status'
     ];
 
     protected $casts = [
-        'sesi' => 'array' // Konversi JSON ke array otomatis
+        'sesi' => 'array',
+        'tanggal' => 'date',
     ];
 
     // Relasi dengan User
@@ -36,9 +37,29 @@ class Pemesanan extends Model
         return $this->belongsTo(Lapangan::class, 'id_lapangan');
     }
 
-    // Relasi dengan Hari
-    public function hari()
+    // Tambahkan accessor untuk mendapatkan hari berdasarkan tanggal jika diperlukan
+    public function getHariAttribute()
     {
-        return $this->belongsTo(Hari::class, 'id_hari');
+        // 0 = Minggu, 1 = Senin, dst.
+        $dayOfWeek = date('w', strtotime($this->tanggal));
+        
+        // Sesuaikan dengan tabel hari (asumsi 1 = Senin, dst.)
+        $dayMappings = [
+            0 => 7, // Minggu = 7
+            1 => 1, // Senin = 1
+            2 => 2, // Selasa = 2
+            3 => 3, // Rabu = 3
+            4 => 4, // Kamis = 4
+            5 => 5, // Jumat = 5
+            6 => 6  // Sabtu = 6
+        ];
+        
+        $hariId = $dayMappings[$dayOfWeek];
+        return Hari::find($hariId);
+    }
+
+    public function pembayaran()
+    {
+        return $this->hasOne(Pembayaran::class, 'id_pemesanan');
     }
 }
