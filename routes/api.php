@@ -13,6 +13,11 @@ use App\Http\Controllers\HariController;
 use App\Http\Controllers\API\AuthController;
 use Illuminate\Http\Request;
 
+// Tambahkan di bagian atas, sebelum route lainnya
+Route::get('/sanctum/csrf-cookie', function () {
+    return response()->json(['message' => 'CSRF cookie set']);
+});
+
 // Route yang bisa diakses tanpa login
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
