@@ -297,4 +297,20 @@ class PemesananController extends Controller
             'data' => $available
         ]);
     }
+
+    // Tambahkan method getUserBookings
+    public function getUserBookings(Request $request)
+    {
+        try {
+            $user = $request->user();
+            $bookings = Pemesanan::with(['lapangan as field', 'sesi as session', 'status'])
+                ->where('id_user', $user->id)
+                ->orderBy('created_at', 'desc')
+                ->get();
+            
+            return response()->json($bookings);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Error mendapatkan data pemesanan: ' . $e->getMessage()], 500);
+        }
+    }
 }

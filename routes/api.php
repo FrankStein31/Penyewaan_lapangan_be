@@ -13,11 +13,6 @@ use App\Http\Controllers\HariController;
 use App\Http\Controllers\API\AuthController;
 use Illuminate\Http\Request;
 
-// Tambahkan di bagian atas, sebelum route lainnya
-Route::get('/sanctum/csrf-cookie', function () {
-    return response()->json(['message' => 'CSRF cookie set']);
-});
-
 // Route yang bisa diakses tanpa login
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
@@ -25,6 +20,11 @@ Route::post('/login', [AuthController::class, 'login']);
 // Bungkus semua route yang membutuhkan autentikasi
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
+    
+    // Route untuk mendapatkan user yang terautentikasi
+    Route::get('/user', function (Request $request) {
+        return $request->user();
+    });
     
     // Route yang bisa diakses user dan admin
     Route::get('/lapangan', [LapanganController::class, 'index']);
@@ -44,6 +44,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Pemesanan
     Route::get('/pemesanan/check-availability', [PemesananController::class, 'checkAvailability']);
+    // Route untuk mendapatkan pemesanan user yang login
+    Route::get('/pemesanan/user', [PemesananController::class, 'getUserBookings']);
     Route::get('/pemesanan', [PemesananController::class, 'index']);
     Route::post('/pemesanan', [PemesananController::class, 'store']);
     Route::get('/pemesanan/{id}', [PemesananController::class, 'show']);

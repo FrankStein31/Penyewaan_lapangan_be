@@ -12,6 +12,18 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        // Pastikan HandleCors middleware dijalankan secara global
+        $middleware->use([
+            \Illuminate\Http\Middleware\HandleCors::class,
+            \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
+        ]);
+        
+        // Tambahkan route ini ke dalam exempted routes untuk CSRF
+        $middleware->validateCsrfTokens(except: [
+            'api/*',
+            'sanctum/csrf-cookie'
+        ]);
+        
         $middleware->alias([
             'role' => \App\Http\Middleware\CheckRole::class,
         ]);
