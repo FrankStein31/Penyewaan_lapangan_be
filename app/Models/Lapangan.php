@@ -13,7 +13,8 @@ class Lapangan extends Model
         'deskripsi',
         'harga',
         'kategori_id',
-        'status'
+        'status',
+        'foto'
     ];
 
     public function kategori()
