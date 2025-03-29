@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Lapangan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
 
 class LapanganController extends Controller
 {
@@ -37,7 +38,8 @@ class LapanganController extends Controller
                 'kategori_id' => 'required|exists:kategori_laps,id',
                 'fasilitas' => 'required|array',
                 'fasilitas.*' => 'exists:fasilitas,id',
-                'status' => 'required|in:tersedia,tidak tersedia'
+                'status' => 'required|in:tersedia,tidak tersedia',
+                'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
             ]);
 
             if ($validator->fails()) {
@@ -48,7 +50,18 @@ class LapanganController extends Controller
                 ], 422);
             }
 
-            $lapangan = Lapangan::create($request->except('fasilitas'));
+            // Data yang akan disimpan
+            $data = $request->except(['fasilitas', 'foto']);
+            
+            // Upload foto jika ada
+            if ($request->hasFile('foto')) {
+                $foto = $request->file('foto');
+                $filename = time() . '_' . $foto->getClientOriginalName();
+                $path = $foto->storeAs('lapangan', $filename, 'public');
+                $data['foto'] = $path;
+            }
+
+            $lapangan = Lapangan::create($data);
             $lapangan->fasilitas()->attach($request->fasilitas);
 
             return response()->json([
@@ -96,7 +109,8 @@ class LapanganController extends Controller
                 'kategori_id' => 'exists:kategori_laps,id',
                 'fasilitas' => 'array',
                 'fasilitas.*' => 'exists:fasilitas,id',
-                'status' => 'in:tersedia,tidak tersedia'
+                'status' => 'in:tersedia,tidak tersedia',
+                'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
             ]);
 
             if ($validator->fails()) {
@@ -107,7 +121,23 @@ class LapanganController extends Controller
                 ], 422);
             }
 
-            $lapangan->update($request->except('fasilitas'));
+            // Data yang akan diupdate
+            $data = $request->except(['fasilitas', 'foto', '_method']);
+            
+            // Upload foto baru jika ada
+            if ($request->hasFile('foto')) {
+                // Hapus foto lama jika ada
+                if ($lapangan->foto && Storage::disk('public')->exists($lapangan->foto)) {
+                    Storage::disk('public')->delete($lapangan->foto);
+                }
+                
+                $foto = $request->file('foto');
+                $filename = time() . '_' . $foto->getClientOriginalName();
+                $path = $foto->storeAs('lapangan', $filename, 'public');
+                $data['foto'] = $path;
+            }
+
+            $lapangan->update($data);
             
             if ($request->has('fasilitas')) {
                 $lapangan->fasilitas()->sync($request->fasilitas);
@@ -131,6 +161,12 @@ class LapanganController extends Controller
     {
         try {
             $lapangan = Lapangan::findOrFail($id);
+            
+            // Hapus foto jika ada
+            if ($lapangan->foto && Storage::disk('public')->exists($lapangan->foto)) {
+                Storage::disk('public')->delete($lapangan->foto);
+            }
+            
             $lapangan->fasilitas()->detach();
             $lapangan->delete();
             
