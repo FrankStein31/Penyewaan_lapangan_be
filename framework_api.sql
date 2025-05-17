@@ -27,7 +27,7 @@ CREATE TABLE `fasilitas` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `fasilitas` */
 
@@ -35,7 +35,8 @@ insert  into `fasilitas`(`id`,`nama_fasilitas`,`deskripsi`,`created_at`,`updated
 (1,'Ruang Ganti','Pria dan Wanita','2025-03-09 04:40:39','2025-03-09 04:43:46'),
 (2,'toilet','pria dan wanita','2025-03-09 04:43:56','2025-03-09 04:43:56'),
 (4,'Air Mancur','mancur kolam','2025-03-28 15:32:25','2025-03-28 15:32:25'),
-(5,'kantin','kantin makan','2025-03-28 15:47:21','2025-03-28 15:47:21');
+(5,'kantin','kantin makan','2025-03-28 15:47:21','2025-03-28 15:47:21'),
+(8,'loker','loker penyimpanan','2025-04-06 08:54:03','2025-04-06 08:54:03');
 
 /*Table structure for table `fasilitas_lapangan` */
 
@@ -57,7 +58,13 @@ insert  into `fasilitas_lapangan`(`fasilitas_id`,`lapangan_id`) values
 (2,2),
 (5,2),
 (2,3),
-(5,3);
+(5,3),
+(1,5),
+(2,5),
+(5,5),
+(2,6),
+(5,6),
+(8,6);
 
 /*Table structure for table `hari` */
 
@@ -70,7 +77,7 @@ CREATE TABLE `hari` (
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `hari_nama_hari_unique` (`nama_hari`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `hari` */
 
@@ -80,7 +87,8 @@ insert  into `hari`(`id`,`nama_hari`,`created_at`,`updated_at`) values
 (3,'rabu','2025-03-19 06:52:23','2025-03-19 06:52:23'),
 (4,'kamis','2025-03-19 06:53:42','2025-03-19 06:54:10'),
 (6,'jumat','2025-03-28 15:48:34','2025-03-28 15:48:34'),
-(7,'sabtu','2025-03-29 15:08:40','2025-03-29 15:08:40');
+(7,'sabtu','2025-03-29 15:08:40','2025-03-29 15:08:40'),
+(8,'Minggu','2025-04-06 08:53:38','2025-04-06 08:53:38');
 
 /*Table structure for table `kategori_laps` */
 
@@ -93,14 +101,15 @@ CREATE TABLE `kategori_laps` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `kategori_laps` */
 
 insert  into `kategori_laps`(`id`,`nama_kategori`,`deskripsi`,`created_at`,`updated_at`) values 
 (2,'Badminton','lapangan badminton','2025-03-09 04:29:11','2025-03-29 14:43:06'),
-(3,'Futsal','Lapangan','2025-03-09 04:29:20','2025-03-09 04:29:50'),
-(4,'Basket','Lapangan basket','2025-03-28 16:34:51','2025-03-29 14:59:11');
+(3,'Futsal','Lapangan Futsal','2025-03-09 04:29:20','2025-04-06 08:55:39'),
+(4,'Basket','Lapangan basket','2025-03-28 16:34:51','2025-03-29 14:59:11'),
+(7,'Tenis','LapanganTenis','2025-05-16 21:53:21','2025-05-16 21:53:21');
 
 /*Table structure for table `lapangan` */
 
@@ -120,13 +129,15 @@ CREATE TABLE `lapangan` (
   PRIMARY KEY (`id`),
   KEY `kategori_id` (`kategori_id`),
   CONSTRAINT `lapangan_ibfk_1` FOREIGN KEY (`kategori_id`) REFERENCES `kategori_laps` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `lapangan` */
 
 insert  into `lapangan`(`id`,`nama`,`kapasitas`,`deskripsi`,`harga`,`kategori_id`,`foto`,`status`,`created_at`,`updated_at`) values 
-(2,'Lapangan Futsal A',10,'Lapangan futsal indoor dengan rumput sintetis',100000.00,3,NULL,'tersedia','2025-03-09 15:50:26','2025-03-29 15:41:49'),
-(3,'Lapangan Basket A',20,'lapangan basket sintetis',35000.00,4,NULL,'tersedia','2025-03-29 15:39:06','2025-03-29 15:39:06');
+(2,'Lapangan Futsal A',10,'Lapangan futsal indoor dengan rumput sintetis',100000.00,3,'lapangan/1743240744_back hitam.jpg','tersedia','2025-03-09 15:50:26','2025-04-06 08:57:10'),
+(3,'Lapangan Basket A',20,'lapangan basket sintetis',35000.00,4,'lapangan/1743240238_back hitam.jpg','tersedia','2025-03-29 15:39:06','2025-03-29 16:23:58'),
+(5,'Lapangan Basket B',5,'sintesis',35000.00,2,'lapangan/1743240744_back hitam.jpg','tersedia','2025-03-29 16:32:24','2025-03-29 16:32:24'),
+(6,'Lapangan Futsal B',10,'Rumput sintetis',25000.00,3,'lapangan/1743240744_back hitam.jpg','tersedia','2025-04-06 08:56:27','2025-04-06 08:56:27');
 
 /*Table structure for table `migrations` */
 
@@ -137,7 +148,7 @@ CREATE TABLE `migrations` (
   `migration` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `batch` int NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `migrations` */
 
@@ -151,7 +162,8 @@ insert  into `migrations`(`id`,`migration`,`batch`) values
 (7,'2025_03_09_210649_create_hari_table',7),
 (8,'2025_03_09_210650_create_pemesanan_table',8),
 (9,'2025_03_09_210651_create_pembayaran_table',9),
-(10,'2025_03_11_090033_sesi',10);
+(10,'2025_03_11_090033_sesi',10),
+(11,'2025_05_16_120357_update_pemesanan_sesi_tables',11);
 
 /*Table structure for table `pembayaran` */
 
@@ -163,6 +175,8 @@ CREATE TABLE `pembayaran` (
   `metode` enum('transfer','midtrans') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `bukti_transfer` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `status` enum('menunggu verifikasi','belum dibayar','ditolak','diverifikasi') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `total_bayar` decimal(10,2) NOT NULL DEFAULT '0.00',
+  `kode_pembayaran` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id_pembayaran`),
@@ -181,14 +195,19 @@ CREATE TABLE `pemesanan` (
   `id_user` bigint unsigned NOT NULL,
   `id_lapangan` bigint unsigned NOT NULL,
   `tanggal` date DEFAULT NULL,
-  `sesi` json NOT NULL,
+  `jam_mulai` time NOT NULL,
+  `jam_selesai` time NOT NULL,
+  `id_sesi` bigint unsigned DEFAULT NULL,
   `status` enum('menunggu verifikasi','diverifikasi','ditolak','dibatalkan','selesai') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'menunggu verifikasi',
+  `total_harga` decimal(10,2) NOT NULL DEFAULT '0.00',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id_pemesanan`),
   KEY `pemesanan_id_user_foreign` (`id_user`),
   KEY `pemesanan_id_lapangan_foreign` (`id_lapangan`),
+  KEY `pemesanan_id_sesi_foreign` (`id_sesi`),
   CONSTRAINT `pemesanan_id_lapangan_foreign` FOREIGN KEY (`id_lapangan`) REFERENCES `lapangan` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `pemesanan_id_sesi_foreign` FOREIGN KEY (`id_sesi`) REFERENCES `sesis` (`id_jam`) ON DELETE SET NULL,
   CONSTRAINT `pemesanan_id_user_foreign` FOREIGN KEY (`id_user`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -212,14 +231,14 @@ CREATE TABLE `personal_access_tokens` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `personal_access_tokens_token_unique` (`token`),
   KEY `personal_access_tokens_tokenable_type_tokenable_id_index` (`tokenable_type`,`tokenable_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=56 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=107 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `personal_access_tokens` */
 
 insert  into `personal_access_tokens`(`id`,`tokenable_type`,`tokenable_id`,`name`,`token`,`abilities`,`last_used_at`,`expires_at`,`created_at`,`updated_at`) values 
 (53,'App\\Models\\User',13,'auth_token','a74a33cf7666b004b41099c3e14409d23fc3c5e8bec3ab7deb358dd9fd5fec4a','[\"*\"]',NULL,NULL,'2025-03-29 15:12:23','2025-03-29 15:12:23'),
-(54,'App\\Models\\User',5,'auth_token','d56f7ecc08539d8cf9b40a2e71065569a2ab5b7ac7334e1231778165240f2b0e','[\"*\"]',NULL,NULL,'2025-03-29 15:19:07','2025-03-29 15:19:07'),
-(55,'App\\Models\\User',5,'auth_token','85e25fbdcf9ebdfd6940556c1be97e45b2314ac6cb6d9c8fb10db83044405d8e','[\"*\"]',NULL,NULL,'2025-03-29 15:22:50','2025-03-29 15:22:50');
+(71,'App\\Models\\User',15,'auth_token','9167c82bbe5382c77a861744323c59115512aef0a8f8b7ced18d4b0578252199','[\"*\"]',NULL,NULL,'2025-04-24 20:56:07','2025-04-24 20:56:07'),
+(106,'App\\Models\\User',12,'auth_token','1e8a9eaf4b9ed7b78cddbec6a894cc222d12cecec1889c168c9497537f708d65','[\"*\"]',NULL,NULL,'2025-05-16 21:55:07','2025-05-16 21:55:07');
 
 /*Table structure for table `sesis` */
 
@@ -230,20 +249,24 @@ CREATE TABLE `sesis` (
   `jam_mulai` time NOT NULL,
   `jam_selesai` time NOT NULL,
   `deskripsi` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `hari_id` bigint unsigned DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id_jam`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  PRIMARY KEY (`id_jam`),
+  KEY `sesis_hari_id_foreign` (`hari_id`),
+  CONSTRAINT `sesis_hari_id_foreign` FOREIGN KEY (`hari_id`) REFERENCES `hari` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `sesis` */
 
-insert  into `sesis`(`id_jam`,`jam_mulai`,`jam_selesai`,`deskripsi`,`created_at`,`updated_at`) values 
-(1,'07:00:00','08:00:00','sesi 1','2025-03-11 09:19:59','2025-03-11 09:27:26'),
-(2,'08:00:00','09:00:00','sesi 2','2025-03-11 09:20:45','2025-03-11 09:20:45'),
-(4,'09:00:00','10:00:00','sesi 3','2025-03-20 11:42:36','2025-03-20 11:42:39'),
-(5,'10:00:00','11:00:00','sesi 4','2025-03-20 11:43:00','2025-03-20 11:43:03'),
-(6,'11:00:00','12:00:00','sesi 5','2025-03-29 15:26:16','2025-03-29 15:26:16'),
-(7,'12:00:00','13:00:00','sesi 6','2025-03-29 15:27:13','2025-03-29 15:27:13');
+insert  into `sesis`(`id_jam`,`jam_mulai`,`jam_selesai`,`deskripsi`,`hari_id`,`created_at`,`updated_at`) values 
+(1,'07:00:00','08:00:00','sesi 1',NULL,'2025-03-11 09:19:59','2025-03-11 09:27:26'),
+(2,'08:00:00','09:00:00','sesi 2',NULL,'2025-03-11 09:20:45','2025-03-11 09:20:45'),
+(4,'09:00:00','10:00:00','sesi 3',NULL,'2025-03-20 11:42:36','2025-03-20 11:42:39'),
+(5,'10:00:00','11:00:00','sesi 4',NULL,'2025-03-20 11:43:00','2025-03-20 11:43:03'),
+(6,'11:00:00','12:00:00','sesi 5',NULL,'2025-03-29 15:26:16','2025-03-29 15:26:16'),
+(7,'12:00:00','13:00:00','sesi 6',NULL,'2025-03-29 15:27:13','2025-03-29 15:27:13'),
+(8,'13:00:00','14:00:00','sesi 7',NULL,'2025-05-16 21:54:13','2025-05-16 21:54:13');
 
 /*Table structure for table `status_lapangan` */
 
@@ -253,17 +276,21 @@ CREATE TABLE `status_lapangan` (
   `id_status` bigint unsigned NOT NULL AUTO_INCREMENT,
   `id_lapangan` bigint unsigned NOT NULL,
   `deskripsi_status` enum('tersedia','disewa','perbaikan') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `tanggal` date DEFAULT NULL,
+  `id_sesi` bigint unsigned DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id_status`),
   KEY `status_lapangan_id_lapangan_foreign` (`id_lapangan`),
-  CONSTRAINT `status_lapangan_id_lapangan_foreign` FOREIGN KEY (`id_lapangan`) REFERENCES `lapangan` (`id`) ON DELETE CASCADE
+  KEY `status_lapangan_id_sesi_foreign` (`id_sesi`),
+  CONSTRAINT `status_lapangan_id_lapangan_foreign` FOREIGN KEY (`id_lapangan`) REFERENCES `lapangan` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `status_lapangan_id_sesi_foreign` FOREIGN KEY (`id_sesi`) REFERENCES `sesis` (`id_jam`) ON DELETE SET NULL
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `status_lapangan` */
 
-insert  into `status_lapangan`(`id_status`,`id_lapangan`,`deskripsi_status`,`created_at`,`updated_at`) values 
-(1,2,'tersedia','2025-03-09 15:50:59','2025-03-20 04:39:08');
+insert  into `status_lapangan`(`id_status`,`id_lapangan`,`deskripsi_status`,`tanggal`,`id_sesi`,`created_at`,`updated_at`) values 
+(1,2,'tersedia',NULL,NULL,'2025-03-09 15:50:59','2025-03-20 04:39:08');
 
 /*Table structure for table `users` */
 
@@ -281,17 +308,17 @@ CREATE TABLE `users` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `users_nim_unique` (`no_hp`),
   UNIQUE KEY `users_email_unique` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `users` */
 
 insert  into `users`(`id`,`nama`,`email`,`password`,`role`,`no_hp`,`created_at`,`updated_at`) values 
-(5,'Nama Baru','steinlie@gmail.com','$2y$12$AF6icwUm0CA3urB9DnvpieSFqaDd1LQQQVkqpGUhkTgRlhxXIbbgW','admin','213730071','2025-03-19 08:07:05','2025-03-19 12:48:56'),
-(6,'frank edit','frank@gmail.com','$2y$12$NPExvtMaCkPH1eS5uD4zaOnUIEmU30YieIbSro7lo29XkvYb2b7Ky','user','444444','2025-03-19 13:11:35','2025-03-19 15:10:38'),
-(7,'stein','stein@gmail.com','$2y$12$xcefpNdl9tS0uccVulgAhudNatEF1eXBASntI9RE3NtZopDD3pqcS','user','12345','2025-03-20 04:40:32','2025-03-20 04:40:32'),
-(8,'agung wibowo','agung@gmail.com','$2y$12$zZ7JSSZZ1usMWCGyiKMR0eW3bKyII0ghxIGwCmxwXArMwcHHYZn4O','user','321123','2025-03-20 13:31:48','2025-03-28 16:50:27'),
-(12,'Frankie Steinlie','frankie.steinlie@gmail.com','$2y$12$DrieEb4r55THc8HvgWIQLu4vXgbyKVMSMnizlNhd/2jtlT.8eL.0m','user','08883866931','2025-03-29 14:48:48','2025-03-29 14:48:48'),
-(13,'Frankie Steinlie','123@gmail.com','$2y$12$TUD9hVsvbgWEAcXSFZlhHejibPn8qlFm8Fx.hNY9KPUKih4Fl4TIO','user','088838669312','2025-03-29 15:12:23','2025-03-29 15:12:23');
+(5,'Admin','admin@gmail.com','$2y$12$wYTCLpqNOss1be00RtWTiOoEaj6/hzSp5w4d5Red3uD7ntUDtKV0a','admin','213730071','2025-03-19 08:07:05','2025-03-19 12:48:56'),
+(6,'User','user@gmail.com','$2y$12$wYTCLpqNOss1be00RtWTiOoEaj6/hzSp5w4d5Red3uD7ntUDtKV0a','user','444444','2025-03-19 13:11:35','2025-03-19 15:10:38'),
+(7,'stein','stein@gmail.com','$2y$12$wYTCLpqNOss1be00RtWTiOoEaj6/hzSp5w4d5Red3uD7ntUDtKV0a','user','12345','2025-03-20 04:40:32','2025-03-20 04:40:32'),
+(8,'agung wibowo','agung@gmail.com','$2y$12$wYTCLpqNOss1be00RtWTiOoEaj6/hzSp5w4d5Red3uD7ntUDtKV0a','user','321123','2025-03-20 13:31:48','2025-03-28 16:50:27'),
+(12,'Frankie Steinlie','frankie.steinlie@gmail.com','$2y$12$wYTCLpqNOss1be00RtWTiOoEaj6/hzSp5w4d5Red3uD7ntUDtKV0a','user','08883866931','2025-03-29 14:48:48','2025-03-29 14:48:48'),
+(15,'user agung','agungwibowo@gmail.com','$2y$12$wYTCLpqNOss1be00RtWTiOoEaj6/hzSp5w4d5Red3uD7ntUDtKV0a','user','088838669311','2025-04-24 20:56:07','2025-04-24 20:56:07');
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;

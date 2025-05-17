@@ -8,6 +8,7 @@ use App\Models\StatusLapangan;
 use App\Models\Sesi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
 
 class PemesananController extends Controller
 {
@@ -19,9 +20,9 @@ class PemesananController extends Controller
         $user = auth()->user();
         
         if ($user->role === 'admin') {
-            $pemesanan = Pemesanan::with(['user', 'lapangan', 'pembayaran'])->get();
+            $pemesanan = Pemesanan::with(['user', 'lapangan', 'sesi', 'pembayaran'])->get();
         } else {
-            $pemesanan = Pemesanan::with(['lapangan', 'pembayaran'])
+            $pemesanan = Pemesanan::with(['lapangan', 'sesi', 'pembayaran'])
                 ->where('id_user', $user->id)
                 ->get();
         }
@@ -62,8 +63,11 @@ class PemesananController extends Controller
         $validator = Validator::make($request->all(), [
             'id_lapangan' => 'required|exists:lapangan,id',
             'tanggal' => 'required|date|after_or_equal:today',
-            'sesi' => 'required|array',
-            'sesi.*' => 'exists:sesis,id_jam'
+            'id_sesi' => 'required|exists:sesis,id_jam',
+            'nama_pelanggan' => 'nullable|string|max:255',
+            'email' => 'nullable|email|max:255',
+            'no_hp' => 'nullable|string|max:20',
+            'catatan' => 'nullable|string',
         ]);
 
         if ($validator->fails()) {
@@ -74,53 +78,71 @@ class PemesananController extends Controller
             ], 422);
         }
 
-        // Cek ketersediaan lapangan untuk hari, tanggal, dan sesi tersebut
+        // Ambil data sesi
+        $sesi = Sesi::findOrFail($request->id_sesi);
+        
+        // Hitung total harga berdasarkan harga lapangan dan durasi
+        $lapangan = Lapangan::findOrFail($request->id_lapangan);
+        $hargaPerJam = $lapangan->harga;
+        $durasi = $sesi->getDurasiAttribute();
+        $totalHarga = $hargaPerJam * $durasi;
+
+        // Cek ketersediaan lapangan untuk tanggal dan sesi tersebut
         $checkPemesanan = Pemesanan::where('id_lapangan', $request->id_lapangan)
             ->where('tanggal', $request->tanggal)
+            ->where('id_sesi', $request->id_sesi)
             ->whereIn('status', ['menunggu verifikasi', 'diverifikasi'])
-            ->get();
+            ->first();
 
-        foreach ($checkPemesanan as $pemesanan) {
-            $sesiTerpesan = $pemesanan->sesi;
-            $sesiReq = $request->sesi;
-            
-            // Cek apakah ada sesi yang bentrok
-            $intersect = array_intersect($sesiTerpesan, $sesiReq);
-            
-            if (count($intersect) > 0) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Sesi lapangan sudah dipesan untuk hari tersebut',
-                    'sesi_bentrok' => $intersect
-                ], 400);
-            }
+        if ($checkPemesanan) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Sesi lapangan sudah dipesan untuk tanggal tersebut',
+            ], 400);
         }
 
-        // Buat pemesanan baru
-        $pemesanan = Pemesanan::create([
-            'id_user' => auth()->id(),
-            'id_lapangan' => $request->id_lapangan,
-            'tanggal' => $request->tanggal,
-            'sesi' => $request->sesi,
-            'status' => 'menunggu verifikasi'
-        ]);
-
-        // Update status lapangan menjadi disewa
-        $statusLapangan = StatusLapangan::where('id_lapangan', $request->id_lapangan)->first();
-        if ($statusLapangan) {
-            $statusLapangan->update(['deskripsi_status' => 'disewa']);
-        } else {
-            StatusLapangan::create([
+        try {
+            // Buat pemesanan baru
+            $pemesanan = Pemesanan::create([
+                'id_user' => auth()->id(),
                 'id_lapangan' => $request->id_lapangan,
-                'deskripsi_status' => 'disewa'
+                'tanggal' => $request->tanggal,
+                'jam_mulai' => $sesi->jam_mulai,
+                'jam_selesai' => $sesi->jam_selesai,
+                'id_sesi' => $request->id_sesi,
+                'status' => 'menunggu verifikasi',
+                'total_harga' => $totalHarga,
+                'nama_pelanggan' => $request->nama_pelanggan,
+                'email' => $request->email,
+                'no_hp' => $request->no_hp,
+                'catatan' => $request->catatan,
             ]);
-        }
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Pemesanan berhasil dibuat',
-            'data' => $pemesanan
-        ], 201);
+            // Update status lapangan menjadi disewa untuk tanggal dan sesi tersebut
+            StatusLapangan::updateOrCreate(
+                [
+                    'id_lapangan' => $request->id_lapangan,
+                    'tanggal' => $request->tanggal,
+                    'id_sesi' => $request->id_sesi
+                ],
+                [
+                    'deskripsi_status' => 'disewa'
+                ]
+            );
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Pemesanan berhasil dibuat',
+                'data' => $pemesanan->load(['lapangan', 'sesi'])
+            ], 201);
+        } catch (\Exception $e) {
+            Log::error('Error saat membuat pemesanan: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan saat membuat pemesanan',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
@@ -128,7 +150,7 @@ class PemesananController extends Controller
      */
     public function show($id)
     {
-        $pemesanan = Pemesanan::with(['user', 'lapangan', 'pembayaran'])->find($id);
+        $pemesanan = Pemesanan::with(['user', 'lapangan', 'sesi', 'pembayaran'])->find($id);
         
         if (!$pemesanan) {
             return response()->json([
@@ -198,13 +220,14 @@ class PemesananController extends Controller
         $pemesanan->status = $request->status;
         $pemesanan->save();
 
-        // Jika status berubah menjadi dibatalkan atau selesai, kembalikan status lapangan
+        // Jika status berubah menjadi dibatalkan atau selesai, update status lapangan
         if (($request->status === 'dibatalkan' || $request->status === 'selesai') &&
             ($oldStatus === 'menunggu verifikasi' || $oldStatus === 'diverifikasi')) {
-            $statusLapangan = StatusLapangan::where('id_lapangan', $pemesanan->id_lapangan)->first();
-            if ($statusLapangan) {
-                $statusLapangan->update(['deskripsi_status' => 'tersedia']);
-            }
+            
+            StatusLapangan::where('id_lapangan', $pemesanan->id_lapangan)
+                ->where('tanggal', $pemesanan->tanggal)
+                ->where('id_sesi', $pemesanan->id_sesi)
+                ->update(['deskripsi_status' => 'tersedia']);
         }
 
         return response()->json([
@@ -236,12 +259,12 @@ class PemesananController extends Controller
             ], 403);
         }
 
-        // Jika pemesanan masih aktif, kembalikan status lapangan
+        // Jika pemesanan masih aktif, kembalikan status lapangan menjadi tersedia
         if ($pemesanan->status === 'menunggu verifikasi' || $pemesanan->status === 'diverifikasi') {
-            $statusLapangan = StatusLapangan::where('id_lapangan', $pemesanan->id_lapangan)->first();
-            if ($statusLapangan) {
-                $statusLapangan->update(['deskripsi_status' => 'tersedia']);
-            }
+            StatusLapangan::where('id_lapangan', $pemesanan->id_lapangan)
+                ->where('tanggal', $pemesanan->tanggal)
+                ->where('id_sesi', $pemesanan->id_sesi)
+                ->update(['deskripsi_status' => 'tersedia']);
         }
 
         $pemesanan->delete();
@@ -254,48 +277,68 @@ class PemesananController extends Controller
     
     public function checkAvailability(Request $request)
     {
+        // Log permintaan untuk debugging
+        Log::info('Check availability request', $request->all());
+        
         $validator = Validator::make($request->all(), [
             'id_lapangan' => 'required|exists:lapangan,id',
-            'tanggal' => 'required|date|after_or_equal:today'
+            'tanggal' => 'required|date'
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
                 'message' => 'Validasi gagal',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
+                'request_data' => $request->all() // Mengembalikan data yang dikirim untuk membantu debugging
             ], 422);
         }
 
-        $sesi = Sesi::all();
-        $booked = [];
+        try {
+            // Dapatkan semua sesi
+            $allSesi = Sesi::all();
+            
+            // Dapatkan sesi yang sudah dipesan
+            $bookedSesi = Pemesanan::where('id_lapangan', $request->id_lapangan)
+                ->where('tanggal', $request->tanggal)
+                ->whereIn('status', ['menunggu verifikasi', 'diverifikasi', 'pending', 'confirmed'])
+                ->pluck('id_sesi')
+                ->toArray();
+            
+            // Dapatkan info lapangan
+            $lapangan = Lapangan::findOrFail($request->id_lapangan);
 
-        $pemesanan = Pemesanan::where('id_lapangan', $request->id_lapangan)
-            ->where('tanggal', $request->tanggal)
-            ->whereIn('status', ['menunggu verifikasi', 'diverifikasi'])
-            ->get();
+            // Siapkan data ketersediaan
+            $available = [];
+            foreach ($allSesi as $sesi) {
+                $available[] = [
+                    'id_sesi' => $sesi->id_jam,
+                    'jam_mulai' => $sesi->jam_mulai,
+                    'jam_selesai' => $sesi->jam_selesai,
+                    'deskripsi' => $sesi->deskripsi,
+                    'durasi' => $sesi->getDurasiAttribute(),
+                    'harga' => $lapangan->harga,
+                    'total_harga' => $lapangan->harga * $sesi->getDurasiAttribute(),
+                    'tersedia' => !in_array($sesi->id_jam, $bookedSesi)
+                ];
+            }
 
-        foreach ($pemesanan as $pesan) {
-            $booked = array_merge($booked, $pesan->sesi);
+            return response()->json([
+                'success' => true,
+                'message' => 'Ketersediaan sesi lapangan untuk tanggal ' . $request->tanggal,
+                'tanggal' => $request->tanggal,
+                'lapangan' => $lapangan->nama,
+                'data' => $available
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error checking availability: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan saat memeriksa ketersediaan lapangan',
+                'error' => $e->getMessage(),
+                'request_data' => $request->all()
+            ], 500);
         }
-
-        $available = [];
-        foreach ($sesi as $s) {
-            $available[] = [
-                'id_jam' => $s->id_jam,
-                'jam_mulai' => $s->jam_mulai,
-                'jam_selesai' => $s->jam_selesai,
-                'deskripsi' => $s->deskripsi,
-                'tersedia' => !in_array($s->id_jam, $booked)
-            ];
-        }
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Ketersediaan sesi lapangan untuk tanggal ' . $request->tanggal,
-            'tanggal' => $request->tanggal,
-            'data' => $available
-        ]);
     }
 
     // Tambahkan method getUserBookings
@@ -303,14 +346,34 @@ class PemesananController extends Controller
     {
         try {
             $user = $request->user();
-            $bookings = Pemesanan::with(['lapangan as field', 'sesi as session', 'status'])
+            $bookings = Pemesanan::with(['lapangan', 'sesi', 'pembayaran'])
                 ->where('id_user', $user->id)
                 ->orderBy('created_at', 'desc')
                 ->get();
             
-            return response()->json($bookings);
+            $formattedBookings = $bookings->map(function($booking) {
+                return [
+                    'id' => $booking->id_pemesanan,
+                    'fieldName' => $booking->lapangan->nama,
+                    'date' => $booking->tanggal->format('Y-m-d'),
+                    'startTime' => date('H:i', strtotime($booking->jam_mulai)),
+                    'endTime' => date('H:i', strtotime($booking->jam_selesai)),
+                    'status' => $booking->status,
+                    'totalPrice' => $booking->total_harga,
+                    'paymentStatus' => $booking->pembayaran ? $booking->pembayaran->status : 'belum dibayar',
+                    'bookingCode' => 'BK' . str_pad($booking->id_pemesanan, 6, '0', STR_PAD_LEFT)
+                ];
+            });
+            
+            return response()->json([
+                'success' => true,
+                'data' => $formattedBookings
+            ]);
         } catch (\Exception $e) {
-            return response()->json(['message' => 'Error mendapatkan data pemesanan: ' . $e->getMessage()], 500);
+            return response()->json([
+                'success' => false,
+                'message' => 'Error mendapatkan data pemesanan: ' . $e->getMessage()
+            ], 500);
         }
     }
 }

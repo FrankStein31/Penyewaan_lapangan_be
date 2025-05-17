@@ -16,13 +16,22 @@ class Pemesanan extends Model
         'id_user',
         'id_lapangan',
         'tanggal',
-        'sesi',
-        'status'
+        'jam_mulai',
+        'jam_selesai',
+        'id_sesi',
+        'status',
+        'total_harga',
+        'nama_pelanggan',
+        'email',
+        'no_hp',
+        'catatan'
     ];
 
     protected $casts = [
-        'sesi' => 'array',
         'tanggal' => 'date',
+        'jam_mulai' => 'datetime:H:i',
+        'jam_selesai' => 'datetime:H:i',
+        'total_harga' => 'decimal:2'
     ];
 
     // Relasi dengan User
@@ -35,6 +44,12 @@ class Pemesanan extends Model
     public function lapangan()
     {
         return $this->belongsTo(Lapangan::class, 'id_lapangan');
+    }
+
+    // Relasi dengan Sesi
+    public function sesi()
+    {
+        return $this->belongsTo(Sesi::class, 'id_sesi', 'id_jam');
     }
 
     // Tambahkan accessor untuk mendapatkan hari berdasarkan tanggal jika diperlukan
@@ -58,8 +73,23 @@ class Pemesanan extends Model
         return Hari::find($hariId);
     }
 
+    // Relasi dengan pembayaran
     public function pembayaran()
     {
         return $this->hasOne(Pembayaran::class, 'id_pemesanan');
+    }
+    
+    // Accessor untuk mendapatkan durasi dalam jam (untuk perhitungan biaya)
+    public function getDurasiAttribute()
+    {
+        if (!$this->jam_mulai || !$this->jam_selesai) {
+            return 0;
+        }
+        
+        $mulai = strtotime($this->jam_mulai);
+        $selesai = strtotime($this->jam_selesai);
+        
+        // Hitung selisih dalam jam
+        return round(($selesai - $mulai) / 3600, 1);
     }
 }
