@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class PemesananController extends Controller
 {
@@ -66,7 +67,7 @@ class PemesananController extends Controller
         $validator = Validator::make($request->all(), [
             'id_lapangan' => 'required|exists:lapangan,id',
             'tanggal' => 'required|date|after_or_equal:today',
-            'id_sesi' => 'required|exists:sesis,id_jam',
+            'id_sesi' => 'required',
             'nama_pelanggan' => 'nullable|string|max:255',
             'email' => 'nullable|email|max:255',
             'no_hp' => 'nullable|string|max:20',
@@ -82,35 +83,62 @@ class PemesananController extends Controller
             ], 422);
         }
 
-        // Ambil data sesi
-        try {
-            $sesi = Sesi::findOrFail($request->id_sesi);
-        } catch (\Exception $e) {
-            Log::error('Sesi tidak ditemukan: ' . $e->getMessage());
+        // Proses data id_sesi
+        $sesiIds = $request->id_sesi;
+        // Pastikan id_sesi dalam bentuk array
+        if (!is_array($sesiIds)) {
+            // Jika hanya satu id (string atau integer), ubah menjadi array
+            $sesiIds = [$sesiIds];
+        }
+
+        // Validasi semua ID sesi ada di database
+        $sesiCount = Sesi::whereIn('id_jam', $sesiIds)->count();
+        if ($sesiCount != count($sesiIds)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Sesi dengan ID ' . $request->id_sesi . ' tidak ditemukan',
-                'error' => $e->getMessage()
+                'message' => 'Beberapa ID sesi tidak valid',
+            ], 422);
+        }
+
+        // Ambil semua data sesi terkait
+        $sesiList = Sesi::whereIn('id_jam', $sesiIds)->orderBy('jam_mulai')->get();
+        if ($sesiList->isEmpty()) {
+            Log::error('Sesi tidak ditemukan untuk ID: ' . json_encode($sesiIds));
+            return response()->json([
+                'success' => false,
+                'message' => 'Sesi dengan ID yang diberikan tidak ditemukan',
             ], 404);
         }
+
+        // Tentukan jam mulai (paling awal) dan jam selesai (paling akhir)
+        $jamMulai = $sesiList->min('jam_mulai');
+        $jamSelesai = $sesiList->max('jam_selesai');
         
-        // Hitung total harga berdasarkan harga lapangan dan durasi
+        // Hitung total harga berdasarkan harga lapangan dan durasi total
         try {
             $lapangan = Lapangan::findOrFail($request->id_lapangan);
             $hargaPerJam = $lapangan->harga;
-            $durasi = $sesi->getDurasiAttribute();
             
-            if (!$durasi) {
-                Log::error('Durasi tidak valid: ' . json_encode($sesi));
+            // Hitung total durasi dari semua sesi
+            $totalDurasi = 0;
+            foreach ($sesiList as $sesi) {
+                $mulai = Carbon::parse($sesi->jam_mulai);
+                $selesai = Carbon::parse($sesi->jam_selesai);
+                $durasi = $selesai->diffInHours($mulai);
+                $totalDurasi += $durasi;
+            }
+            
+            if (!$totalDurasi) {
+                Log::error('Durasi tidak valid: ' . json_encode($sesiList));
                 return response()->json([
                     'success' => false,
                     'message' => 'Gagal mendapatkan durasi sesi',
                 ], 500);
             }
             
-            $totalHarga = $hargaPerJam * $durasi;
+            $totalHarga = $hargaPerJam * $totalDurasi;
             
-            Log::info('Perhitungan harga: harga/jam=' . $hargaPerJam . ', durasi=' . $durasi . ', total=' . $totalHarga);
+            Log::info('Perhitungan harga: harga/jam=' . $hargaPerJam . ', durasi=' . $totalDurasi . ', total=' . $totalHarga);
         } catch (\Exception $e) {
             Log::error('Error menghitung harga: ' . $e->getMessage());
             return response()->json([
@@ -120,18 +148,29 @@ class PemesananController extends Controller
             ], 500);
         }
 
-        // Cek ketersediaan lapangan untuk tanggal dan sesi tersebut
-        $checkPemesanan = Pemesanan::where('id_lapangan', $request->id_lapangan)
-            ->where('tanggal', $request->tanggal)
-            ->where('id_sesi', $request->id_sesi)
-            ->whereIn('status', ['menunggu verifikasi', 'diverifikasi'])
-            ->first();
+        // Cek ketersediaan lapangan untuk tanggal dan semua sesi tersebut
+        $bookedSessions = [];
+        foreach ($sesiIds as $sesiId) {
+            $checkPemesanan = Pemesanan::where('id_lapangan', $request->id_lapangan)
+                ->where('tanggal', $request->tanggal)
+                ->whereJsonContains('id_sesi', $sesiId)
+                ->whereIn('status', ['menunggu verifikasi', 'diverifikasi'])
+                ->first();
 
-        if ($checkPemesanan) {
-            Log::warning('Sesi sudah dipesan: Lapangan=' . $request->id_lapangan . ', Tanggal=' . $request->tanggal . ', Sesi=' . $request->id_sesi);
+            if ($checkPemesanan) {
+                $bookedSessions[] = $sesiId;
+            }
+        }
+
+        if (!empty($bookedSessions)) {
+            // Ambil informasi sesi yang sudah dipesan untuk ditampilkan
+            $bookedSesiInfo = Sesi::whereIn('id_jam', $bookedSessions)->get(['id_jam', 'jam_mulai', 'jam_selesai', 'deskripsi'])->toArray();
+            
+            Log::warning('Sesi sudah dipesan: Lapangan=' . $request->id_lapangan . ', Tanggal=' . $request->tanggal . ', Sesi=' . json_encode($bookedSessions));
             return response()->json([
                 'success' => false,
-                'message' => 'Sesi lapangan sudah dipesan untuk tanggal tersebut',
+                'message' => 'Beberapa sesi lapangan sudah dipesan untuk tanggal tersebut',
+                'booked_sessions' => $bookedSesiInfo
             ], 400);
         }
 
@@ -143,9 +182,9 @@ class PemesananController extends Controller
                 'id_user' => auth()->id(),
                 'id_lapangan' => $request->id_lapangan,
                 'tanggal' => $request->tanggal,
-                'jam_mulai' => $sesi->jam_mulai,
-                'jam_selesai' => $sesi->jam_selesai,
-                'id_sesi' => $request->id_sesi,
+                'jam_mulai' => $jamMulai,
+                'jam_selesai' => $jamSelesai,
+                'id_sesi' => $sesiIds,
                 'status' => 'menunggu verifikasi',
                 'total_harga' => $totalHarga,
                 'nama_pelanggan' => $request->nama_pelanggan,
@@ -154,15 +193,15 @@ class PemesananController extends Controller
                 'catatan' => $request->catatan,
             ]);
 
-            // Update status lapangan menjadi disewa untuk tanggal dan sesi tersebut
+            // Update status lapangan menjadi disewa untuk tanggal dan semua sesi tersebut
             $statusLapangan = StatusLapangan::updateOrCreate(
                 [
                     'id_lapangan' => $request->id_lapangan,
                     'tanggal' => $request->tanggal,
-                    'id_sesi' => $request->id_sesi
                 ],
                 [
-                    'deskripsi_status' => 'disewa'
+                    'deskripsi_status' => 'disewa',
+                    'id_sesi' => $sesiIds
                 ]
             );
             
@@ -172,7 +211,9 @@ class PemesananController extends Controller
             DB::commit();
             
             // Load relasi untuk respons
-            $pemesanan->load(['lapangan', 'sesi']);
+            $pemesanan->load('lapangan');
+            // Tambahkan data sesi secara manual karena sekarang menjadi array
+            $pemesanan->sesi_info = $sesiList;
             
             return response()->json([
                 'success' => true,

@@ -13,6 +13,7 @@ return new class extends Migration
             $table->foreignId('id_lapangan')->constrained('lapangan')->onDelete('cascade');
             $table->enum('deskripsi_status', ['tersedia', 'disewa', 'perbaikan']);
             $table->date('tanggal')->nullable();
+            $table->json('id_sesi')->nullable();
             $table->timestamps();
         });
     }

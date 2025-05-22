@@ -18,9 +18,9 @@ return new class extends Migration
             $table->foreignId('id_user')->constrained('users', 'id')->onDelete('cascade');
             $table->foreignId('id_lapangan')->constrained('lapangan', 'id')->onDelete('cascade');
             $table->date('tanggal');
-            $table->time('jam_mulai');
-            $table->time('jam_selesai');
-            $table->unsignedBigInteger('id_sesi')->nullable();
+            $table->time('jam_mulai'); // Akan menyimpan jam mulai paling awal dari sesi yang dipilih
+            $table->time('jam_selesai'); // Akan menyimpan jam selesai paling akhir dari sesi yang dipilih
+            $table->json('id_sesi'); // Menggunakan JSON untuk menyimpan array id sesi
             $table->enum('status', ['menunggu verifikasi', 'diverifikasi', 'ditolak', 'dibatalkan', 'selesai'])->default('menunggu verifikasi');
             $table->decimal('total_harga', 10, 2)->default(0);
             $table->string('nama_pelanggan')->nullable();
