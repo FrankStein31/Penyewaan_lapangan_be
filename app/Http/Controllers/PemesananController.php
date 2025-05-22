@@ -9,6 +9,7 @@ use App\Models\Sesi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 class PemesananController extends Controller
 {
@@ -60,6 +61,8 @@ class PemesananController extends Controller
      */
     public function store(Request $request)
     {
+        Log::info('Request pemesanan:', $request->all());
+        
         $validator = Validator::make($request->all(), [
             'id_lapangan' => 'required|exists:lapangan,id',
             'tanggal' => 'required|date|after_or_equal:today',
@@ -71,6 +74,7 @@ class PemesananController extends Controller
         ]);
 
         if ($validator->fails()) {
+            Log::error('Validasi gagal: ' . json_encode($validator->errors()));
             return response()->json([
                 'success' => false,
                 'message' => 'Validasi gagal',
@@ -79,13 +83,42 @@ class PemesananController extends Controller
         }
 
         // Ambil data sesi
-        $sesi = Sesi::findOrFail($request->id_sesi);
+        try {
+            $sesi = Sesi::findOrFail($request->id_sesi);
+        } catch (\Exception $e) {
+            Log::error('Sesi tidak ditemukan: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Sesi dengan ID ' . $request->id_sesi . ' tidak ditemukan',
+                'error' => $e->getMessage()
+            ], 404);
+        }
         
         // Hitung total harga berdasarkan harga lapangan dan durasi
-        $lapangan = Lapangan::findOrFail($request->id_lapangan);
-        $hargaPerJam = $lapangan->harga;
-        $durasi = $sesi->getDurasiAttribute();
-        $totalHarga = $hargaPerJam * $durasi;
+        try {
+            $lapangan = Lapangan::findOrFail($request->id_lapangan);
+            $hargaPerJam = $lapangan->harga;
+            $durasi = $sesi->getDurasiAttribute();
+            
+            if (!$durasi) {
+                Log::error('Durasi tidak valid: ' . json_encode($sesi));
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Gagal mendapatkan durasi sesi',
+                ], 500);
+            }
+            
+            $totalHarga = $hargaPerJam * $durasi;
+            
+            Log::info('Perhitungan harga: harga/jam=' . $hargaPerJam . ', durasi=' . $durasi . ', total=' . $totalHarga);
+        } catch (\Exception $e) {
+            Log::error('Error menghitung harga: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal menghitung harga',
+                'error' => $e->getMessage()
+            ], 500);
+        }
 
         // Cek ketersediaan lapangan untuk tanggal dan sesi tersebut
         $checkPemesanan = Pemesanan::where('id_lapangan', $request->id_lapangan)
@@ -95,12 +128,15 @@ class PemesananController extends Controller
             ->first();
 
         if ($checkPemesanan) {
+            Log::warning('Sesi sudah dipesan: Lapangan=' . $request->id_lapangan . ', Tanggal=' . $request->tanggal . ', Sesi=' . $request->id_sesi);
             return response()->json([
                 'success' => false,
                 'message' => 'Sesi lapangan sudah dipesan untuk tanggal tersebut',
             ], 400);
         }
 
+        DB::beginTransaction();
+        
         try {
             // Buat pemesanan baru
             $pemesanan = Pemesanan::create([
@@ -119,7 +155,7 @@ class PemesananController extends Controller
             ]);
 
             // Update status lapangan menjadi disewa untuk tanggal dan sesi tersebut
-            StatusLapangan::updateOrCreate(
+            $statusLapangan = StatusLapangan::updateOrCreate(
                 [
                     'id_lapangan' => $request->id_lapangan,
                     'tanggal' => $request->tanggal,
@@ -129,14 +165,25 @@ class PemesananController extends Controller
                     'deskripsi_status' => 'disewa'
                 ]
             );
+            
+            Log::info('StatusLapangan berhasil diupdate: ' . json_encode($statusLapangan));
 
+            // Commit transaksi jika semua operasi berhasil
+            DB::commit();
+            
+            // Load relasi untuk respons
+            $pemesanan->load(['lapangan', 'sesi']);
+            
             return response()->json([
                 'success' => true,
                 'message' => 'Pemesanan berhasil dibuat',
-                'data' => $pemesanan->load(['lapangan', 'sesi'])
+                'data' => $pemesanan
             ], 201);
         } catch (\Exception $e) {
-            Log::error('Error saat membuat pemesanan: ' . $e->getMessage());
+            // Rollback transaksi jika terjadi error
+            DB::rollBack();
+            
+            Log::error('Error saat membuat pemesanan: ' . $e->getMessage() . "\n" . $e->getTraceAsString());
             return response()->json([
                 'success' => false,
                 'message' => 'Terjadi kesalahan saat membuat pemesanan',
