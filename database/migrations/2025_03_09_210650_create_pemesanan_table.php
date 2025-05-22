@@ -11,14 +11,22 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // Migrasi dibagi menjadi 2 tahap untuk menangani dependensi
+        // Tahap 1: Buat tabel tanpa foreign key ke sesis
         Schema::create('pemesanan', function (Blueprint $table) {
             $table->id('id_pemesanan');
-            $table->foreignId('id_user')->constrained('users')->onDelete('cascade');
-            $table->foreignId('id_lapangan')->constrained('lapangan')->onDelete('cascade');
-            $table->foreignId('id_hari')->constrained('hari')->onDelete('cascade');
-            $table->json('sesi'); // Menyimpan array sesi dalam format JSON
-            $table->enum('status', ['menunggu verifikasi', 'diverifikasi', 'ditolak', 'dibatalkan', 'selesai'])
-                ->default('menunggu verifikasi');
+            $table->foreignId('id_user')->constrained('users', 'id')->onDelete('cascade');
+            $table->foreignId('id_lapangan')->constrained('lapangan', 'id')->onDelete('cascade');
+            $table->date('tanggal');
+            $table->time('jam_mulai');
+            $table->time('jam_selesai');
+            $table->unsignedBigInteger('id_sesi')->nullable();
+            $table->enum('status', ['menunggu verifikasi', 'diverifikasi', 'ditolak', 'dibatalkan', 'selesai'])->default('menunggu verifikasi');
+            $table->decimal('total_harga', 10, 2)->default(0);
+            $table->string('nama_pelanggan')->nullable();
+            $table->string('email')->nullable();
+            $table->string('no_hp', 20)->nullable();
+            $table->text('catatan')->nullable();
             $table->timestamps();
         });
     }
