@@ -58,10 +58,10 @@ Route::middleware('auth:sanctum')->group(function () {
     // Pemesanan
     Route::get('/pemesanan', [PemesananController::class, 'index']);
     Route::post('/pemesanan', [PemesananController::class, 'store']);
+    Route::get('/pemesanan/user', [PemesananController::class, 'getUserBookings']);
     Route::get('/pemesanan/{id}', [PemesananController::class, 'show']);
     Route::put('/pemesanan/{id}', [PemesananController::class, 'update']);
     Route::delete('/pemesanan/{id}', [PemesananController::class, 'destroy']);
-    Route::get('/pemesanan/user', [PemesananController::class, 'getUserBookings']);
     
     // Pembayaran
     Route::get('/pembayaran', [PembayaranController::class, 'index']);

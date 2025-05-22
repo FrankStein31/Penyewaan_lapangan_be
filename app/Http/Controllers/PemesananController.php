@@ -434,28 +434,34 @@ class PemesananController extends Controller
     {
         try {
             $user = $request->user();
-            $bookings = Pemesanan::with(['lapangan', 'sesi', 'pembayaran'])
+            
+            if (!$user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'User tidak ditemukan'
+                ], 401);
+            }
+            
+            // Ambil pemesanan user dengan eager loading yang benar
+            $bookings = Pemesanan::with(['lapangan', 'pembayaran'])
                 ->where('id_user', $user->id)
                 ->orderBy('created_at', 'desc')
                 ->get();
             
-            $formattedBookings = $bookings->map(function($booking) {
-                return [
-                    'id' => $booking->id_pemesanan,
-                    'fieldName' => $booking->lapangan->nama,
-                    'date' => $booking->tanggal->format('Y-m-d'),
-                    'startTime' => date('H:i', strtotime($booking->jam_mulai)),
-                    'endTime' => date('H:i', strtotime($booking->jam_selesai)),
-                    'status' => $booking->status,
-                    'totalPrice' => $booking->total_harga,
-                    'paymentStatus' => $booking->pembayaran ? $booking->pembayaran->status : 'belum dibayar',
-                    'bookingCode' => 'BK' . str_pad($booking->id_pemesanan, 6, '0', STR_PAD_LEFT)
-                ];
+            // Tambahkan data sesi secara manual untuk menghindari masalah eager loading
+            $bookings->each(function ($booking) {
+                // Ambil sesi berdasarkan array id_sesi
+                if (is_array($booking->id_sesi) && !empty($booking->id_sesi)) {
+                    $sesi_data = Sesi::whereIn('id_jam', $booking->id_sesi)->get();
+                    $booking->setAttribute('sesi_data', $sesi_data);
+                } else {
+                    $booking->setAttribute('sesi_data', []);
+                }
             });
             
             return response()->json([
                 'success' => true,
-                'data' => $formattedBookings
+                'data' => $bookings
             ]);
         } catch (\Exception $e) {
             return response()->json([
