@@ -112,6 +112,7 @@ CREATE TABLE `lapangan` (
   `deskripsi` text COLLATE utf8mb4_unicode_ci,
   `harga` decimal(10,2) NOT NULL,
   `kategori_id` bigint unsigned NOT NULL,
+  `foto` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `status` enum('tersedia','tidak tersedia') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'tersedia',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
@@ -122,10 +123,10 @@ CREATE TABLE `lapangan` (
 
 /*Data for the table `lapangan` */
 
-insert  into `lapangan`(`id`,`nama`,`kapasitas`,`deskripsi`,`harga`,`kategori_id`,`status`,`created_at`,`updated_at`) values 
-(1,'Lapangan Basket A',10,'Lapangan basket standar',100000.00,1,'tersedia','2025-05-22 21:04:37','2025-05-22 21:04:37'),
-(2,'Lapangan Futsal A',10,'Lapangan futsal dengan rumput sintetis',150000.00,2,'tersedia','2025-05-22 21:04:37','2025-05-22 21:04:37'),
-(3,'Lapangan Badminton A',4,'Lapangan badminton standar',50000.00,3,'tersedia','2025-05-22 21:04:37','2025-05-22 21:04:37');
+insert  into `lapangan`(`id`,`nama`,`kapasitas`,`deskripsi`,`harga`,`kategori_id`,`foto`,`status`,`created_at`,`updated_at`) values 
+(1,'Lapangan Basket A',10,'Lapangan basket standar',100000.00,1,'lapangan/1747999974_logo.png','tersedia','2025-05-22 21:04:37','2025-05-23 18:32:54'),
+(2,'Lapangan Futsal A',10,'Lapangan futsal dengan rumput sintetis',150000.00,2,'lapangan/1747999974_logo.png','tersedia','2025-05-22 21:04:37','2025-05-22 21:04:37'),
+(3,'Lapangan Badminton A',4,'Lapangan badminton standar',50000.00,3,'lapangan/1747999974_logo.png','tersedia','2025-05-22 21:04:37','2025-05-22 21:04:37');
 
 /*Table structure for table `migrations` */
 
@@ -230,13 +231,12 @@ CREATE TABLE `personal_access_tokens` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `personal_access_tokens_token_unique` (`token`),
   KEY `personal_access_tokens_tokenable_type_tokenable_id_index` (`tokenable_type`,`tokenable_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `personal_access_tokens` */
 
 insert  into `personal_access_tokens`(`id`,`tokenable_type`,`tokenable_id`,`name`,`token`,`abilities`,`last_used_at`,`expires_at`,`created_at`,`updated_at`) values 
-(16,'App\\Models\\User',3,'auth_token','45c437ee096baf45b95ddee146ad090b6df95b228deb31be87d686fac81576c6','[\"*\"]',NULL,NULL,'2025-05-23 13:48:45','2025-05-23 13:48:45'),
-(20,'App\\Models\\User',2,'auth_token','324e7f63c8071a7794fb9a6502fa03ef49a1bbec309ff30f5742072baea49671','[\"*\"]',NULL,NULL,'2025-05-23 15:00:25','2025-05-23 15:00:25');
+(16,'App\\Models\\User',3,'auth_token','45c437ee096baf45b95ddee146ad090b6df95b228deb31be87d686fac81576c6','[\"*\"]',NULL,NULL,'2025-05-23 13:48:45','2025-05-23 13:48:45');
 
 /*Table structure for table `sesis` */
 
