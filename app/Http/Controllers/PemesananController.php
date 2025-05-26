@@ -21,31 +21,39 @@ class PemesananController extends Controller
     public function index()
     {
         $user = auth()->user();
-        
-        if ($user->role === 'admin') {
-            $pemesanan = Pemesanan::with(['user', 'lapangan', 'sesi', 'pembayaran'])->get();
-        } else {
-            $pemesanan = Pemesanan::with(['lapangan', 'sesi', 'pembayaran'])
+
+        if ($user && $user->role === 'admin') {
+            $pemesanan = Pemesanan::with(['user', 'lapangan', 'pembayaran'])->get();
+        } else if ($user) {
+            $pemesanan = Pemesanan::with(['user', 'lapangan', 'pembayaran'])
                 ->where('id_user', $user->id)
                 ->get();
+        } else {
+            return response()->json(['message' => 'Unauthorized'], 401);
         }
-        
-        // Tambahkan info hari secara manual ke response
+
+        // Ambil data sesi manual
         $result = $pemesanan->map(function($item) {
-            $data = $item->toArray();
-            $hari = $item->getHariAttribute();
-            if ($hari) {
-                $data['hari'] = [
-                    'id' => $hari->id,
-                    'nama_hari' => $hari->nama_hari
-                ];
+            $sesi_data = [];
+            if (is_array($item->id_sesi) && !empty($item->id_sesi)) {
+                $sesi_data = \App\Models\Sesi::whereIn('id_jam', $item->id_sesi)->get();
             }
-            return $data;
+            return [
+                'id_pemesanan'   => $item->id,
+                'nama_pelanggan' => $item->user->name ?? '-',
+                'email'          => $item->user->email ?? '-',
+                'no_hp'          => $item->user->no_hp ?? '-',
+                'lapangan'       => $item->lapangan,
+                'tanggal'        => $item->tanggal,
+                'status'         => $item->status,
+                'catatan'        => $item->catatan,
+                'total_harga'    => $item->total_harga,
+                'sesi'           => $sesi_data,
+                'created_at'     => $item->created_at,
+            ];
         });
-        
+
         return response()->json([
-            'success' => true,
-            'message' => 'Daftar pemesanan berhasil diambil',
             'data' => $result
         ]);
     }
