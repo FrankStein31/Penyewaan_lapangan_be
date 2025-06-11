@@ -39,10 +39,12 @@ class PemesananController extends Controller
                 $sesi_data = \App\Models\Sesi::whereIn('id_jam', $item->id_sesi)->get();
             }
             return [
-                'id_pemesanan'   => $item->id,
-                'nama_pelanggan' => $item->user->name ?? '-',
-                'email'          => $item->user->email ?? '-',
-                'no_hp'          => $item->user->no_hp ?? '-',
+                'id_pemesanan'   => $item->id_pemesanan,
+                'id'             => $item->id_pemesanan,
+                'booking_id'     => $item->id_pemesanan,
+                'nama_pelanggan' => $item->nama_pelanggan ?? $item->user->nama ?? '-',
+                'email'          => $item->email ?? $item->user->email ?? '-',
+                'no_hp'          => $item->no_hp ?? $item->user->no_hp ?? '-',
                 'lapangan'       => $item->lapangan,
                 'tanggal'        => $item->tanggal,
                 'status'         => $item->status,
@@ -50,6 +52,8 @@ class PemesananController extends Controller
                 'total_harga'    => $item->total_harga,
                 'sesi'           => $sesi_data,
                 'created_at'     => $item->created_at,
+                'updated_at'     => $item->updated_at,
+                'pembayaran'     => $item->pembayaran
             ];
         });
 
@@ -432,22 +436,60 @@ class PemesananController extends Controller
                 ->orderBy('created_at', 'desc')
                 ->get();
             
-            // Tambahkan data sesi secara manual untuk menghindari masalah eager loading
-            $bookings->each(function ($booking) {
+            // Format data untuk response
+            $formattedBookings = $bookings->map(function($booking) {
                 // Ambil sesi berdasarkan array id_sesi
+                $sesi_data = [];
                 if (is_array($booking->id_sesi) && !empty($booking->id_sesi)) {
                     $sesi_data = Sesi::whereIn('id_jam', $booking->id_sesi)->get();
-                    $booking->setAttribute('sesi_data', $sesi_data);
-                } else {
-                    $booking->setAttribute('sesi_data', []);
                 }
+
+                // Format data booking
+                $data = [
+                    'id_pemesanan' => $booking->id_pemesanan,
+                    'id' => $booking->id_pemesanan,
+                    'booking_id' => $booking->id_pemesanan,
+                    'nama_pelanggan' => $booking->nama_pelanggan,
+                    'email' => $booking->email,
+                    'no_hp' => $booking->no_hp,
+                    'lapangan' => $booking->lapangan,
+                    'tanggal' => $booking->tanggal,
+                    'status' => $booking->status,
+                    'catatan' => $booking->catatan,
+                    'total_harga' => $booking->total_harga,
+                    'sesi' => $sesi_data,
+                    'created_at' => $booking->created_at,
+                    'updated_at' => $booking->updated_at
+                ];
+
+                // Tambahkan data pembayaran jika ada
+                if ($booking->pembayaran->isNotEmpty()) {
+                    $pembayaran = $booking->pembayaran->first();
+                    $data['pembayaran'] = [
+                        'id_pembayaran' => $pembayaran->id_pembayaran,
+                        'metode' => $pembayaran->metode,
+                        'status' => $pembayaran->status,
+                        'total_bayar' => $pembayaran->total_bayar,
+                        'snap_token' => $pembayaran->snap_token,
+                        'transaction_id' => $pembayaran->transaction_id,
+                        'payment_type' => $pembayaran->payment_type,
+                        'transaction_status' => $pembayaran->transaction_status,
+                        'transaction_time' => $pembayaran->transaction_time,
+                        'payment_code' => $pembayaran->payment_code,
+                        'pdf_url' => $pembayaran->pdf_url,
+                        'paid_at' => $pembayaran->paid_at
+                    ];
+                }
+
+                return $data;
             });
             
             return response()->json([
                 'success' => true,
-                'data' => $bookings
+                'data' => $formattedBookings
             ]);
         } catch (\Exception $e) {
+            \Log::error('Error getting user bookings: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => 'Error mendapatkan data pemesanan: ' . $e->getMessage()

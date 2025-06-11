@@ -18,11 +18,21 @@ class Pembayaran extends Model
         'bukti_transfer',
         'status',
         'total_bayar',
-        'kode_pembayaran'
+        'kode_pembayaran',
+        'snap_token',
+        'transaction_id',
+        'payment_type',
+        'transaction_status',
+        'transaction_time',
+        'payment_code',
+        'pdf_url',
+        'paid_at'
     ];
     
     protected $casts = [
         'total_bayar' => 'decimal:2',
+        'paid_at' => 'datetime',
+        'transaction_time' => 'datetime'
     ];
 
     public function pemesanan()

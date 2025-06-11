@@ -35,6 +35,9 @@ Route::get('/fasilitas/{id}', [FasilitasController::class, 'show']);
 // Cek ketersediaan lapangan (publik)
 Route::get('/pemesanan/check-availability', [PemesananController::class, 'checkAvailability']);
 
+// Midtrans Notification Handler (publik)
+Route::post('/payments/midtrans-notification', [PembayaranController::class, 'handleMidtransNotification']);
+
 // Bungkus semua route yang membutuhkan autentikasi
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
@@ -65,10 +68,11 @@ Route::middleware('auth:sanctum')->group(function () {
     
     // Pembayaran
     Route::get('/pembayaran', [PembayaranController::class, 'index']);
-    Route::post('/pembayaran', [PembayaranController::class, 'store']);
+    Route::post('/pembayaran/create-transaction', [PembayaranController::class, 'createMidtransTransaction']);
     Route::get('/pembayaran/{id}', [PembayaranController::class, 'show']);
     Route::put('/pembayaran/{id}', [PembayaranController::class, 'update']);
     Route::delete('/pembayaran/{id}', [PembayaranController::class, 'destroy']);
+    Route::post('/pemesanan/{id}/payment/update', [PembayaranController::class, 'updatePaymentStatus']);
     
     // Update profile
     Route::put('/users/{id}', [UserController::class, 'update']);

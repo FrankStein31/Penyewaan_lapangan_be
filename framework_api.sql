@@ -1,5 +1,5 @@
 /*
-SQLyog Enterprise v13.1.1 (64 bit)
+SQLyog Enterprise
 MySQL - 8.0.30 : Database - framework_api
 *********************************************************************
 */
@@ -27,7 +27,7 @@ CREATE TABLE `fasilitas` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `fasilitas` */
 
@@ -35,7 +35,8 @@ insert  into `fasilitas`(`id`,`nama_fasilitas`,`deskripsi`,`created_at`,`updated
 (1,'Toilet','Toilet pria dan wanita','2025-05-22 21:04:37','2025-05-22 21:04:37'),
 (2,'Ruang Ganti','Ruang ganti pria dan wanita','2025-05-22 21:04:37','2025-05-22 21:04:37'),
 (3,'Parkir','Area parkir luas','2025-05-22 21:04:37','2025-05-22 21:04:37'),
-(4,'Kantin','Kantin dan tempat makan','2025-05-22 21:04:37','2025-05-22 21:04:37');
+(4,'Kantin','Kantin dan tempat makan','2025-05-22 21:04:37','2025-05-22 21:04:37'),
+(5,'Loker','Loker tas','2025-06-11 14:36:30','2025-06-11 14:36:30');
 
 /*Table structure for table `fasilitas_lapangan` */
 
@@ -52,9 +53,16 @@ CREATE TABLE `fasilitas_lapangan` (
   KEY `fasilitas_lapangan_fasilitas_id_foreign` (`fasilitas_id`),
   CONSTRAINT `fasilitas_lapangan_fasilitas_id_foreign` FOREIGN KEY (`fasilitas_id`) REFERENCES `fasilitas` (`id`) ON DELETE CASCADE,
   CONSTRAINT `fasilitas_lapangan_lapangan_id_foreign` FOREIGN KEY (`lapangan_id`) REFERENCES `lapangan` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `fasilitas_lapangan` */
+
+insert  into `fasilitas_lapangan`(`id`,`lapangan_id`,`fasilitas_id`,`created_at`,`updated_at`) values 
+(1,1,1,NULL,NULL),
+(2,4,1,NULL,NULL),
+(3,4,2,NULL,NULL),
+(4,4,3,NULL,NULL),
+(5,4,4,NULL,NULL);
 
 /*Table structure for table `hari` */
 
@@ -119,14 +127,15 @@ CREATE TABLE `lapangan` (
   PRIMARY KEY (`id`),
   KEY `lapangan_kategori_id_foreign` (`kategori_id`),
   CONSTRAINT `lapangan_kategori_id_foreign` FOREIGN KEY (`kategori_id`) REFERENCES `kategori_laps` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `lapangan` */
 
 insert  into `lapangan`(`id`,`nama`,`kapasitas`,`deskripsi`,`harga`,`kategori_id`,`foto`,`status`,`created_at`,`updated_at`) values 
 (1,'Lapangan Basket A',10,'Lapangan basket standar',100000.00,1,'lapangan/1747999974_logo.png','tersedia','2025-05-22 21:04:37','2025-05-23 18:32:54'),
 (2,'Lapangan Futsal A',10,'Lapangan futsal dengan rumput sintetis',150000.00,2,'lapangan/1747999974_logo.png','tersedia','2025-05-22 21:04:37','2025-05-22 21:04:37'),
-(3,'Lapangan Badminton A',4,'Lapangan badminton standar',50000.00,3,'lapangan/1747999974_logo.png','tersedia','2025-05-22 21:04:37','2025-05-22 21:04:37');
+(3,'Lapangan Badminton A',4,'Lapangan badminton standar',50000.00,3,'lapangan/1747999974_logo.png','tersedia','2025-05-22 21:04:37','2025-05-22 21:04:37'),
+(4,'coba',1,'lapangan coba',35000.00,2,'lapangan/1749627170_back hitam 2.jpg','tersedia','2025-06-11 14:32:50','2025-06-11 14:32:50');
 
 /*Table structure for table `migrations` */
 
@@ -173,12 +182,17 @@ CREATE TABLE `pembayaran` (
   PRIMARY KEY (`id_pembayaran`),
   KEY `pembayaran_id_pemesanan_foreign` (`id_pemesanan`),
   CONSTRAINT `pembayaran_id_pemesanan_foreign` FOREIGN KEY (`id_pemesanan`) REFERENCES `pemesanan` (`id_pemesanan`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `pembayaran` */
 
 insert  into `pembayaran`(`id_pembayaran`,`id_pemesanan`,`metode`,`bukti_transfer`,`status`,`created_at`,`updated_at`) values 
-(1,4,'transfer',NULL,'belum dibayar','2025-05-23 15:01:16','2025-05-23 15:01:16');
+(1,4,'transfer',NULL,'belum dibayar','2025-05-23 15:01:16','2025-05-23 15:01:16'),
+(2,5,'transfer',NULL,'belum dibayar','2025-05-23 18:39:38','2025-05-23 18:39:38'),
+(3,6,'transfer',NULL,'belum dibayar','2025-06-11 14:13:51','2025-06-11 14:13:51'),
+(4,7,'transfer',NULL,'belum dibayar','2025-06-11 14:15:01','2025-06-11 14:15:01'),
+(5,8,'transfer',NULL,'belum dibayar','2025-06-11 14:23:12','2025-06-11 14:23:12'),
+(6,9,'transfer',NULL,'belum dibayar','2025-06-11 14:39:43','2025-06-11 14:39:43');
 
 /*Table structure for table `pemesanan` */
 
@@ -205,13 +219,18 @@ CREATE TABLE `pemesanan` (
   KEY `pemesanan_id_lapangan_foreign` (`id_lapangan`),
   CONSTRAINT `pemesanan_id_lapangan_foreign` FOREIGN KEY (`id_lapangan`) REFERENCES `lapangan` (`id`) ON DELETE CASCADE,
   CONSTRAINT `pemesanan_id_user_foreign` FOREIGN KEY (`id_user`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `pemesanan` */
 
 insert  into `pemesanan`(`id_pemesanan`,`id_user`,`id_lapangan`,`tanggal`,`jam_mulai`,`jam_selesai`,`id_sesi`,`status`,`total_harga`,`nama_pelanggan`,`email`,`no_hp`,`catatan`,`created_at`,`updated_at`) values 
 (2,2,2,'2025-05-23','14:00:00','16:00:00','[6, 7]','menunggu verifikasi',300000.00,'Frankie Steinlie','frankie.steinlie@gmail.com','08883866931','','2025-05-23 13:31:07','2025-05-23 13:31:07'),
-(4,2,3,'2025-05-23','17:00:00','19:00:00','[9, 10]','menunggu verifikasi',175000.00,'Frankie Steinlie','frankie.steinlie@gmail.com','08883866931','','2025-05-23 15:01:16','2025-05-23 15:01:16');
+(4,2,3,'2025-05-23','17:00:00','19:00:00','[9, 10]','menunggu verifikasi',175000.00,'Frankie Steinlie','frankie.steinlie@gmail.com','08883866931','','2025-05-23 15:01:16','2025-05-23 15:01:16'),
+(5,2,2,'2025-05-23','20:00:00','21:00:00','[12]','selesai',200000.00,'frankie','frankie.steinlie@gmail.com','08512345678','','2025-05-23 18:39:38','2025-05-23 18:39:38'),
+(6,2,1,'2025-06-11','15:00:00','17:00:00','[7, 8]','selesai',250000.00,'Frankie Steinlie','frankie.steinlie@gmail.com','08883866931','','2025-06-11 14:13:51','2025-06-11 14:13:51'),
+(7,2,3,'2025-06-11','16:00:00','17:00:00','[8]','selesai',75000.00,'Frankie Steinlie','frankie.steinlie@gmail.com','08883866931','','2025-06-11 14:15:01','2025-06-11 14:15:01'),
+(8,2,2,'2025-06-11','15:00:00','17:00:00','[7, 8]','menunggu verifikasi',350000.00,'Frankie Steinlie','frankie.steinlie@gmail.com','08883866931','','2025-06-11 14:23:12','2025-06-11 14:23:12'),
+(9,2,4,'2025-06-11','19:00:00','21:00:00','[12, 11]','menunggu verifikasi',170000.00,'Frankie Steinlie','frankie.steinlie@gmail.com','08883866931','','2025-06-11 14:39:43','2025-06-11 14:39:43');
 
 /*Table structure for table `personal_access_tokens` */
 
@@ -231,12 +250,13 @@ CREATE TABLE `personal_access_tokens` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `personal_access_tokens_token_unique` (`token`),
   KEY `personal_access_tokens_tokenable_type_tokenable_id_index` (`tokenable_type`,`tokenable_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `personal_access_tokens` */
 
 insert  into `personal_access_tokens`(`id`,`tokenable_type`,`tokenable_id`,`name`,`token`,`abilities`,`last_used_at`,`expires_at`,`created_at`,`updated_at`) values 
-(16,'App\\Models\\User',3,'auth_token','45c437ee096baf45b95ddee146ad090b6df95b228deb31be87d686fac81576c6','[\"*\"]',NULL,NULL,'2025-05-23 13:48:45','2025-05-23 13:48:45');
+(16,'App\\Models\\User',3,'auth_token','45c437ee096baf45b95ddee146ad090b6df95b228deb31be87d686fac81576c6','[\"*\"]',NULL,NULL,'2025-05-23 13:48:45','2025-05-23 13:48:45'),
+(36,'App\\Models\\User',2,'auth_token','f9429e15c96bcd52905b6fc97f6d5d991ea1b670ea3775d2a75cca0be8ae7291','[\"*\"]',NULL,NULL,'2025-06-11 14:41:08','2025-06-11 14:41:08');
 
 /*Table structure for table `sesis` */
 
@@ -253,7 +273,7 @@ CREATE TABLE `sesis` (
   PRIMARY KEY (`id_jam`),
   KEY `sesis_hari_id_foreign` (`hari_id`),
   CONSTRAINT `sesis_hari_id_foreign` FOREIGN KEY (`hari_id`) REFERENCES `hari` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `sesis` */
 
@@ -286,7 +306,7 @@ CREATE TABLE `status_lapangan` (
   PRIMARY KEY (`id_status`),
   KEY `status_lapangan_id_lapangan_foreign` (`id_lapangan`),
   CONSTRAINT `status_lapangan_id_lapangan_foreign` FOREIGN KEY (`id_lapangan`) REFERENCES `lapangan` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `status_lapangan` */
 
@@ -297,7 +317,15 @@ insert  into `status_lapangan`(`id_status`,`id_lapangan`,`deskripsi_status`,`tan
 (5,2,'disewa','2025-05-23','6','2025-05-23 13:31:07','2025-05-23 13:31:07'),
 (6,2,'disewa','2025-05-23','7','2025-05-23 13:31:07','2025-05-23 13:31:07'),
 (9,3,'disewa','2025-05-23','9','2025-05-23 15:01:16','2025-05-23 15:01:16'),
-(10,3,'disewa','2025-05-23','10','2025-05-23 15:01:16','2025-05-23 15:01:16');
+(10,3,'disewa','2025-05-23','10','2025-05-23 15:01:16','2025-05-23 15:01:16'),
+(11,2,'disewa','2025-05-23','12','2025-05-23 18:39:38','2025-05-23 18:39:38'),
+(12,1,'disewa','2025-06-11','7','2025-06-11 14:13:51','2025-06-11 14:13:51'),
+(13,1,'disewa','2025-06-11','8','2025-06-11 14:13:51','2025-06-11 14:13:51'),
+(14,3,'disewa','2025-06-11','8','2025-06-11 14:15:01','2025-06-11 14:15:01'),
+(15,2,'disewa','2025-06-11','7','2025-06-11 14:23:12','2025-06-11 14:23:12'),
+(16,2,'disewa','2025-06-11','8','2025-06-11 14:23:12','2025-06-11 14:23:12'),
+(17,4,'disewa','2025-06-11','12','2025-06-11 14:39:43','2025-06-11 14:39:43'),
+(18,4,'disewa','2025-06-11','11','2025-06-11 14:39:43','2025-06-11 14:39:43');
 
 /*Table structure for table `users` */
 
